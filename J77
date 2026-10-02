@@ -10,17 +10,6 @@
 -- Instances: 279 | Scripts: 25 | Modules: 0 | Tags: 0
 local G2L = {};
 
--- ============================================================
--- 77 PANEL - PROTEÇÃO DE ACESSO
--- Somente o proprietário autorizado pode executar o painel.
--- ============================================================
-local __77Players = game:GetService("Players")
-local __77LocalPlayer = __77Players.LocalPlayer
-local __77OwnerId = 9657477548
-if not __77LocalPlayer or __77LocalPlayer.UserId ~= __77OwnerId then
-    return
-end
-
 -- StarterGui.ScreenGui
 G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
 G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
@@ -96,7 +85,7 @@ G2L["7"]["TextColor3"] = Color3.fromRGB(13, 255, 110);
 G2L["7"]["BackgroundTransparency"] = 1;
 G2L["7"]["Size"] = UDim2.new(0, 50, 0, 50);
 G2L["7"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["7"]["Text"] = [[V1.0.0]];
+G2L["7"]["Text"] = [[v1.0.0]];
 G2L["7"]["Position"] = UDim2.new(0, 20, 0, 50);
 
 
@@ -1596,7 +1585,7 @@ G2L["89"]["TextColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["89"]["BackgroundTransparency"] = 1;
 G2L["89"]["Size"] = UDim2.new(0, 100, 0, 50);
 G2L["89"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["89"]["Text"] = [[Pressione [J] para]];
+G2L["89"]["Text"] = [[Pressione [B] para]];
 G2L["89"]["Name"] = [[2]];
 G2L["89"]["Position"] = UDim2.new(0, 181, 0, 40);
 
@@ -2805,7 +2794,7 @@ G2L["fb"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["fb"]["BackgroundTransparency"] = 1;
 G2L["fb"]["Size"] = UDim2.new(0, 50, 1, 0);
 G2L["fb"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["fb"]["Text"] = [[V1.0.0]];
+G2L["fb"]["Text"] = [[v1.0.0]];
 G2L["fb"]["Name"] = [[VersionLabel]];
 G2L["fb"]["Position"] = UDim2.new(0, 10, 0, 0);
 
@@ -2820,7 +2809,7 @@ G2L["fc"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["fc"]["BackgroundTransparency"] = 1;
 G2L["fc"]["Size"] = UDim2.new(0, 140, 1, 0);
 G2L["fc"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["fc"]["Text"] = [[77 PANEL]];
+G2L["fc"]["Text"] = [[77 Panel]];
 G2L["fc"]["Name"] = [[TitleLabel]];
 G2L["fc"]["Position"] = UDim2.new(0.5, -50, 0, 0);
 
@@ -3083,13 +3072,14 @@ G2L["113"]["Text"] = [[+]];
 G2L["113"]["Position"] = UDim2.new(0, 142, 0, 0);
 
 
--- StarterGui.ScreenGui.MainPanel.BackgroundImage
+-- -- StarterGui.ScreenGui.MainPanel.BackgroundImage
 G2L["114"] = Instance.new("ImageLabel", G2L["2"]);
 G2L["114"]["BorderSizePixel"] = 0;
 G2L["114"]["ScaleType"] = Enum.ScaleType.Tile;
+G2L["114"]["TileSize"] = UDim2.new(0, 128, 0, 128);
 G2L["114"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["114"]["ImageColor3"] = Color3.fromRGB(35, 12, 55);
-G2L["114"]["Image"] = [[]];
+G2L["114"]["ImageColor3"] = Color3.fromRGB(195, 195, 195);
+G2L["114"]["Image"] = [[rbxassetid://71806348669195]];
 G2L["114"]["Size"] = UDim2.new(1, 0, 1, 0);
 G2L["114"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["114"]["BackgroundTransparency"] = 1;
@@ -3100,8 +3090,8 @@ G2L["114"]["Name"] = [[BackgroundImage]];
 G2L["115"] = Instance.new("ImageButton", G2L["1"]);
 G2L["115"]["BorderSizePixel"] = 0;
 G2L["115"]["AutoButtonColor"] = false;
-G2L["115"]["BackgroundColor3"] = Color3.fromRGB(18, 6, 30);
-G2L["115"]["Image"] = [[]];
+G2L["115"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["115"]["Image"] = [[rbxassetid://85392141697801]];
 G2L["115"]["Size"] = UDim2.new(0, 30, 0, 30);
 G2L["115"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["115"]["Name"] = [[clicker]];
@@ -3122,7 +3112,7 @@ G2L["117"]["CornerRadius"] = UDim.new(1, 0);
 local function C_3()
 local script = G2L["3"];
 	-- ============================================================
-	--  77 PANEL - LocalScript v1.0.0
+	--  77 PANEL - LocalScript v4.4 + DISCORD WEBHOOK
 	-- ============================================================
 	
 	local Players          = game:GetService("Players")
@@ -3273,7 +3263,7 @@ local script = G2L["3"];
 		tentativas = tentativas + 1
 	until mainPanel or tentativas >= 20
 	
-	if not mainPanel then warn("[77 PANEL] MainPanel não encontrado!") return end
+	if not mainPanel then warn("[4E20] MainPanel não encontrado!") return end
 	
 	if screenGui then
 		pcall(function()
@@ -3373,8 +3363,8 @@ local script = G2L["3"];
 	-- [[ 4. CONFIGURAÇÕES GERAIS ]]
 	-- ============================================================
 	local SERVIDOR      = "https://foure20-backend.onrender.com"
-	local GAME_ID       = "4E20_GLOBAL"
-	local MEU_ID_DONO   = 9657477548
+	local GAME_ID       = "77_GLOBAL"
+	local MEU_ID_DONO   = 11562350024
 	local IMAGEM_PADRAO = "rbxassetid://4620867021"
 	
 	local function capitalize(str)
@@ -3394,11 +3384,12 @@ local script = G2L["3"];
 		["USER"]     = Color3.fromRGB(255, 255, 255),
 	}
 	
-	local tagsOwnerAcesso    = {["OWNER"]=true, ["MANAGER"]=true, ["DEVELOP"]=true}
-	local tagsStaffAcesso    = {["OWNER"]=true, ["MANAGER"]=true, ["STAFF"]=true, ["MEOW"]=true, ["DEVELOP"]=true}
+	local tagsOwnerAcesso    = {["OWNER"]=true}
+	local tagsStaffAcesso    = {["OWNER"]=true}
 	local tagsVipAcesso      = {["OWNER"]=true, ["MANAGER"]=true, ["MEOW"]=true, ["VIP 4E20"]=true, ["BABY"]=true, ["DEVELOP"]=true}
-	local tagsBanAcesso      = {["OWNER"]=true, ["DEVELOP"]=true}
+	local tagsBanAcesso      = {["OWNER"]=true}
 	local tagsCreateTagAcess = {["OWNER"]=true}
+	-- 77 POLICY: somente jogadores com a tag OWNER podem abrir OWNER/STAFF/BAN/CREATE TAG.
 	-- [[ v4.4 ]] Animation é acessível por TODOS — sem restrição de cargo
 	
 	local tagSelecionada      = ""
@@ -3516,6 +3507,7 @@ local script = G2L["3"];
 	end
 	
 	local function enviarTag(playerName, cargo, cor, expireTs, permissao, efeito)
+		if meuCargo ~= "OWNER" then return false end
 		pcall(function()
 			local body = {
 				player  = playerName,
@@ -3670,6 +3662,7 @@ local script = G2L["3"];
 	-- [[ 8. SISTEMA DE BAN ]]
 	-- ============================================================
 	local function banirPlayer(userId)
+		if meuCargo ~= "OWNER" then return false end
 		pcall(function()
 			httpRequest({Url=SERVIDOR.."/ban", Method="POST",
 				Headers={["Content-Type"]="application/json"},
@@ -3678,6 +3671,7 @@ local script = G2L["3"];
 	end
 	
 	local function desbanirPlayer(userId)
+		if meuCargo ~= "OWNER" then return false end
 		pcall(function()
 			httpRequest({Url=SERVIDOR.."/unban", Method="POST",
 				Headers={["Content-Type"]="application/json"},
@@ -4007,7 +4001,7 @@ local script = G2L["3"];
 	
 	local function atualizarAbas(cargo)
 		meuCargo = cargo
-		local ehDono = localPlayer.UserId == MEU_ID_DONO
+		local ehDono = cargoEfetivo == "OWNER"
 	
 		local cargoEfetivo = cargo
 		local tagPers = tagsPersonalizadas[localPlayer.Name]
@@ -4277,12 +4271,12 @@ local script = G2L["3"];
 	end
 	
 	-- ============================================================
-	-- [[ 16. ABRIR/FECHAR COM [J] ]]
+	-- [[ 16. ABRIR/FECHAR COM [B] ]]
 	-- ============================================================
 	mainPanel.Visible=true
 	UserInputService.InputBegan:Connect(function(input, gameProcessed)
 		if gameProcessed then return end
-		if input.KeyCode==Enum.KeyCode.J then
+		if input.KeyCode==Enum.KeyCode.B then
 			mainPanel.Visible=not mainPanel.Visible
 			if mainPanel.Visible and telaAtual==nil then abrirTela(homeTela) end
 		end
@@ -4401,6 +4395,7 @@ local script = G2L["3"];
 	-- ============================================================
 	if botaoAdd then
 		botaoAdd.MouseButton1Click:Connect(function()
+			if meuCargo ~= "OWNER" then notificar("ACESSO NEGADO","Somente quem possui a tag OWNER pode criar tags.",3,"USER") return end
 			if tagSelecionada=="" then notificar("ERRO","Selecione uma tag primeiro!",3,"USER") return end
 			local displayAlvo=textoDisplay and textoDisplay.Text or ""
 			if displayAlvo=="DISPLAY NAME" or displayAlvo=="NÃO ENCONTRADO" or displayAlvo=="" then
@@ -4506,6 +4501,7 @@ local script = G2L["3"];
 	
 	if banBtn then
 		banBtn.MouseButton1Click:Connect(function()
+			if meuCargo ~= "OWNER" then notificar("ACESSO NEGADO","Somente quem possui a tag OWNER pode banir.",3,"USER") return end
 			if not banAlvoId then notificar("ERRO","Nenhum player selecionado!",3,"USER") return end
 			if banAlvoId==localPlayer.UserId then notificar("ERRO","Você não pode se banir!",3,"USER") return end
 			banirPlayer(banAlvoId)
@@ -4520,6 +4516,7 @@ local script = G2L["3"];
 	
 	if desbanBtn then
 		desbanBtn.MouseButton1Click:Connect(function()
+			if meuCargo ~= "OWNER" then notificar("ACESSO NEGADO","Somente quem possui a tag OWNER pode desbanir.",3,"USER") return end
 			if not banAlvoId then notificar("ERRO","Nenhum player selecionado!",3,"USER") return end
 			desbanirPlayer(banAlvoId)
 			if banStatusLabel then banStatusLabel.Text="✅ DISPONÍVEL"
@@ -5682,7 +5679,7 @@ local script = G2L["3"];
 			if banidoFrame then banidoFrame.Visible=true end
 			UserInputService.InputBegan:Connect(function(input,gp)
 				if gp then return end
-				if input.KeyCode==Enum.KeyCode.J then
+				if input.KeyCode==Enum.KeyCode.B then
 					mainPanel.Visible=true
 					if banidoFrame then banidoFrame.Visible=true end
 				end
@@ -7721,7 +7718,7 @@ local script = G2L["ae"];
 	local botao       = script.Parent
 	
 	local SERVIDOR = "https://foure20-backend-y9jm.onrender.com"
-	local GAME_ID  = "4E20_GLOBAL"
+	local GAME_ID  = "77_GLOBAL"
 	
 	-- Desregistra do backend
 	local function desregistrarBackend()
@@ -8974,7 +8971,7 @@ task.spawn(C_10d);
 -- StarterGui.ScreenGui.MainPanel.VipTela2.AIMBOT.LocalScript
 local function C_111()
 local script = G2L["111"];
-	print("[77 PANEL] Modo Smooth Auto-Lock (Câmera Lisa) Ativado!")
+	print("[4e20] Modo Smooth Auto-Lock (Câmera Lisa) Ativado!")
 	
 	local Players = game:GetService("Players")
 	local RunService = game:GetService("RunService")
@@ -9034,7 +9031,7 @@ local script = G2L["111"];
 	
 		if sistemaAtivo then
 			if Sinalizador then Sinalizador.TextColor3 = COR_ATIVO end
-			print("[77 PANEL] AIMBOT LISO LIGADO!")
+			print("[4e20] AIMBOT LISO LIGADO!")
 	
 			-- Usamos o loop RenderStepped para alinhar perfeitamente com a taxa de atualização do seu monitor
 			conexaoRender = RunService.RenderStepped:Connect(function()
@@ -9053,7 +9050,7 @@ local script = G2L["111"];
 			end)
 		else
 			if Sinalizador then Sinalizador.TextColor3 = COR_DESATIVO end
-			print("[77 PANEL] AIMBOT DESLIGADO!")
+			print("[4e20] AIMBOT DESLIGADO!")
 	
 			if conexaoRender then
 				conexaoRender:Disconnect()
@@ -9078,36 +9075,7 @@ local script = G2L["111"];
 	end
 end;
 task.spawn(C_111);
--- 77 PANEL - MARCA D'ÁGUA
-G2L["118"] = Instance.new("TextLabel", G2L["2"]);
-G2L["118"]["BackgroundTransparency"] = 1;
-G2L["118"]["BorderSizePixel"] = 0;
-G2L["118"]["Text"] = [[77 PANEL]];
-G2L["118"]["TextColor3"] = Color3.fromRGB(145, 55, 255);
-G2L["118"]["TextTransparency"] = 0.84;
-G2L["118"]["FontFace"] = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["118"]["TextSize"] = 92;
-G2L["118"]["TextScaled"] = false;
-G2L["118"]["Size"] = UDim2.new(0, 360, 0, 110);
-G2L["118"]["Position"] = UDim2.new(0, 125, 0, 150);
-G2L["118"]["Rotation"] = -10;
-G2L["118"]["ZIndex"] = 1;
-G2L["118"]["Name"] = [[Watermark77]];
-
--- 77 PANEL - BOTÃO FLUTUANTE
-G2L["119"] = Instance.new("TextLabel", G2L["115"]);
-G2L["119"]["BackgroundTransparency"] = 1;
-G2L["119"]["BorderSizePixel"] = 0;
-G2L["119"]["Text"] = [[77]];
-G2L["119"]["TextColor3"] = Color3.fromRGB(220, 175, 255);
-G2L["119"]["FontFace"] = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
-G2L["119"]["TextSize"] = 16;
-G2L["119"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["119"]["ZIndex"] = 3;
-G2L["119"]["Name"] = [[Badge77]];
-
 -- StarterGui.ScreenGui.clicker.LocalScript
--- Clique no 77 para abrir/fechar. Atalho: [J].
 local function C_116()
 local script = G2L["116"];
 	local painel = script.Parent.Parent:WaitForChild("MainPanel")
@@ -9167,20 +9135,9 @@ do
     end
 
     G2L["2"].BackgroundColor3 = PURPLE_DARK
-    G2L["2"].BorderColor3 = Color3.fromRGB(145, 55, 255)
     G2L["fa"].BackgroundColor3 = BLACK
     G2L["fb"].TextColor3 = LILAC_BRIGHT
     G2L["fc"].TextColor3 = LILAC_BRIGHT
-    G2L["fc"].Text = "77 PANEL"
-    G2L["fb"].Text = "V1.0.0"
-    G2L["114"].ImageTransparency = 1
-    G2L["115"].BackgroundColor3 = BLACK
-    G2L["115"].BorderSizePixel = 2
-    G2L["115"].BorderColor3 = LILAC
-    G2L["118"].Text = "77 PANEL"
-    G2L["118"].TextColor3 = Color3.fromRGB(145, 55, 255)
-    G2L["119"].Text = "77"
-    G2L["119"].TextColor3 = LILAC_BRIGHT
 end
 
 return G2L["1"], require;
