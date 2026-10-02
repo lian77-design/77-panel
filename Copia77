@@ -3383,11 +3383,12 @@ local script = G2L["3"];
 		["USER"]     = Color3.fromRGB(255, 255, 255),
 	}
 	
-	local tagsOwnerAcesso    = {["OWNER"]=true, ["MANAGER"]=true, ["DEVELOP"]=true}
-	local tagsStaffAcesso    = {["OWNER"]=true, ["MANAGER"]=true, ["STAFF"]=true, ["MEOW"]=true, ["DEVELOP"]=true}
+	local tagsOwnerAcesso    = {["OWNER"]=true}
+	local tagsStaffAcesso    = {["OWNER"]=true}
 	local tagsVipAcesso      = {["OWNER"]=true, ["MANAGER"]=true, ["MEOW"]=true, ["VIP 4E20"]=true, ["BABY"]=true, ["DEVELOP"]=true}
-	local tagsBanAcesso      = {["OWNER"]=true, ["DEVELOP"]=true}
+	local tagsBanAcesso      = {["OWNER"]=true}
 	local tagsCreateTagAcess = {["OWNER"]=true}
+	-- 77 POLICY: somente jogadores com a tag OWNER podem abrir OWNER/STAFF/BAN/CREATE TAG.
 	-- [[ v4.4 ]] Animation é acessível por TODOS — sem restrição de cargo
 	
 	local tagSelecionada      = ""
@@ -3505,6 +3506,7 @@ local script = G2L["3"];
 	end
 	
 	local function enviarTag(playerName, cargo, cor, expireTs, permissao, efeito)
+		if meuCargo ~= "OWNER" then return false end
 		pcall(function()
 			local body = {
 				player  = playerName,
@@ -3659,6 +3661,7 @@ local script = G2L["3"];
 	-- [[ 8. SISTEMA DE BAN ]]
 	-- ============================================================
 	local function banirPlayer(userId)
+		if meuCargo ~= "OWNER" then return false end
 		pcall(function()
 			httpRequest({Url=SERVIDOR.."/ban", Method="POST",
 				Headers={["Content-Type"]="application/json"},
@@ -3667,6 +3670,7 @@ local script = G2L["3"];
 	end
 	
 	local function desbanirPlayer(userId)
+		if meuCargo ~= "OWNER" then return false end
 		pcall(function()
 			httpRequest({Url=SERVIDOR.."/unban", Method="POST",
 				Headers={["Content-Type"]="application/json"},
@@ -3996,7 +4000,7 @@ local script = G2L["3"];
 	
 	local function atualizarAbas(cargo)
 		meuCargo = cargo
-		local ehDono = localPlayer.UserId == MEU_ID_DONO
+		local ehDono = cargoEfetivo == "OWNER"
 	
 		local cargoEfetivo = cargo
 		local tagPers = tagsPersonalizadas[localPlayer.Name]
@@ -4390,6 +4394,7 @@ local script = G2L["3"];
 	-- ============================================================
 	if botaoAdd then
 		botaoAdd.MouseButton1Click:Connect(function()
+			if meuCargo ~= "OWNER" then notificar("ACESSO NEGADO","Somente quem possui a tag OWNER pode criar tags.",3,"USER") return end
 			if tagSelecionada=="" then notificar("ERRO","Selecione uma tag primeiro!",3,"USER") return end
 			local displayAlvo=textoDisplay and textoDisplay.Text or ""
 			if displayAlvo=="DISPLAY NAME" or displayAlvo=="NÃO ENCONTRADO" or displayAlvo=="" then
@@ -4495,6 +4500,7 @@ local script = G2L["3"];
 	
 	if banBtn then
 		banBtn.MouseButton1Click:Connect(function()
+			if meuCargo ~= "OWNER" then notificar("ACESSO NEGADO","Somente quem possui a tag OWNER pode banir.",3,"USER") return end
 			if not banAlvoId then notificar("ERRO","Nenhum player selecionado!",3,"USER") return end
 			if banAlvoId==localPlayer.UserId then notificar("ERRO","Você não pode se banir!",3,"USER") return end
 			banirPlayer(banAlvoId)
@@ -4509,6 +4515,7 @@ local script = G2L["3"];
 	
 	if desbanBtn then
 		desbanBtn.MouseButton1Click:Connect(function()
+			if meuCargo ~= "OWNER" then notificar("ACESSO NEGADO","Somente quem possui a tag OWNER pode desbanir.",3,"USER") return end
 			if not banAlvoId then notificar("ERRO","Nenhum player selecionado!",3,"USER") return end
 			desbanirPlayer(banAlvoId)
 			if banStatusLabel then banStatusLabel.Text="✅ DISPONÍVEL"
