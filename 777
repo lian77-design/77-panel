@@ -3362,8 +3362,8 @@ local script = G2L["3"];
 	-- [[ 4. CONFIGURAÇÕES GERAIS ]]
 	-- ============================================================
 	local SERVIDOR      = "https://foure20-backend.onrender.com"
-	local GAME_ID       = "4E20_GLOBAL"
-	local MEU_ID_DONO   = 9657477548
+	local GAME_ID       = "77_GLOBAL"
+	local MEU_ID_DONO   = 11562350024
 	local IMAGEM_PADRAO = "rbxassetid://4620867021"
 	
 	local function capitalize(str)
@@ -7717,7 +7717,7 @@ local script = G2L["ae"];
 	local botao       = script.Parent
 	
 	local SERVIDOR = "https://foure20-backend-y9jm.onrender.com"
-	local GAME_ID  = "4E20_GLOBAL"
+	local GAME_ID  = "77_GLOBAL"
 	
 	-- Desregistra do backend
 	local function desregistrarBackend()
