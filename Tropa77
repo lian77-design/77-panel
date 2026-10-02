@@ -2487,8 +2487,12 @@ G2L["df"]["BackgroundTransparency"] = 1;
 -- StarterGui.ScreenGui.MainPanel.TarGetTela3.ScrollingFrame.AVATA
 G2L["e0"] = Instance.new("ImageLabel", G2L["df"]);
 G2L["e0"]["BorderSizePixel"] = 0;
-G2L["e0"]["BackgroundColor3"] = Color3.fromRGB(130, 130, 130);
+G2L["e0"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["e0"]["BackgroundTransparency"] = 1;
 G2L["e0"]["Image"] = [[rbxassetid://79377968018480]];
+G2L["e0"]["ImageColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["e0"]["ImageTransparency"] = 0;
+G2L["e0"]["ScaleType"] = Enum.ScaleType.Fit;
 G2L["e0"]["Size"] = UDim2.new(0, 100, 0, 100);
 G2L["e0"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["e0"]["Name"] = [[AVATA]];
@@ -7950,11 +7954,46 @@ local script = G2L["dd"];
 	local imageLabel  = scroll:WaitForChild("AVATA")
 	
 	local IMAGEM_PADRAO = "rbxassetid://79377968018480"
-	
+	imageLabel.BackgroundTransparency = 1
+	imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
+	imageLabel.ImageTransparency = 0
+	imageLabel.ScaleType = Enum.ScaleType.Fit
+
+	-- Fallback visual: se o asset não carregar, mostra 77 em vez do quadrado cinza.
+	local fallback77 = imageLabel:FindFirstChild("Fallback77")
+	if not fallback77 then
+		fallback77 = Instance.new("TextLabel")
+		fallback77.Name = "Fallback77"
+		fallback77.Size = UDim2.fromScale(1, 1)
+		fallback77.Position = UDim2.fromScale(0, 0)
+		fallback77.BackgroundTransparency = 1
+		fallback77.BorderSizePixel = 0
+		fallback77.Text = "77"
+		fallback77.TextColor3 = Color3.fromRGB(190, 70, 255)
+		fallback77.TextScaled = true
+		fallback77.Font = Enum.Font.GothamBold
+		fallback77.Visible = false
+		fallback77.ZIndex = imageLabel.ZIndex + 1
+		fallback77.Parent = imageLabel
+	end
+
+	local function definirImagemPadrao()
+		imageLabel.Image = IMAGEM_PADRAO
+		fallback77.Visible = false
+		task.spawn(function()
+			local ContentProvider = game:GetService("ContentProvider")
+			pcall(function() ContentProvider:PreloadAsync({imageLabel}) end)
+			task.wait(0.25)
+			if imageLabel.Parent and imageLabel.Image == IMAGEM_PADRAO then
+				fallback77.Visible = not imageLabel.IsLoaded
+			end
+		end)
+	end
+
 	local function resetarInterface()
 		labelID.Text      = "ID: 000000"
 		labelDisplay.Text = "NÃO ENCONTRADO"
-		imageLabel.Image  = IMAGEM_PADRAO
+		definirImagemPadrao()
 	end
 	
 	resetarInterface()
@@ -7976,6 +8015,7 @@ local script = G2L["dd"];
 					)
 				end)
 				imageLabel.Image  = ok and content or IMAGEM_PADRAO
+				fallback77.Visible = not ok
 				labelID.Text      = "ID: " .. player.UserId
 				labelDisplay.Text = player.DisplayName
 				return
@@ -8000,6 +8040,7 @@ local script = G2L["dd"];
 					)
 				end)
 				imageLabel.Image  = ok and content or IMAGEM_PADRAO
+				fallback77.Visible = not ok
 				labelID.Text      = "ID: " .. player.UserId
 				labelDisplay.Text = player.DisplayName
 				return
