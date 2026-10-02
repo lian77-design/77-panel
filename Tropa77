@@ -33,7 +33,7 @@ G2L["backgroundImage"]["BackgroundTransparency"] = 1;
 G2L["backgroundImage"]["BorderSizePixel"] = 0;
 G2L["backgroundImage"]["Position"] = UDim2.new(0, 0, 0, 0);
 G2L["backgroundImage"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["backgroundImage"]["Image"] = [[rbxassetid://79149805667885]];
+G2L["backgroundImage"]["Image"] = [[]];
 G2L["backgroundImage"]["ScaleType"] = Enum.ScaleType.Crop;
 G2L["backgroundImage"]["ImageTransparency"] = 0;
 G2L["backgroundImage"]["ZIndex"] = 1;
@@ -2501,7 +2501,7 @@ G2L["e0"] = Instance.new("ImageLabel", G2L["df"]);
 G2L["e0"]["BorderSizePixel"] = 0;
 G2L["e0"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["e0"]["BackgroundTransparency"] = 1;
-G2L["e0"]["Image"] = [[rbxassetid://79377968018480]];
+G2L["e0"]["Image"] = [[]];
 G2L["e0"]["ImageColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["e0"]["ImageTransparency"] = 0;
 G2L["e0"]["ScaleType"] = Enum.ScaleType.Fit;
@@ -3094,7 +3094,7 @@ G2L["114"].Name = "BackgroundImage";
 G2L["114"].Parent = G2L["2"];
 G2L["114"].BorderSizePixel = 0;
 G2L["114"].BackgroundTransparency = 1;
-G2L["114"].Image = "rbxassetid://79377968018480";
+G2L["114"].Image = "";
 G2L["114"].ImageColor3 = Color3.fromRGB(255, 255, 255);
 G2L["114"].ImageTransparency = 0;
 G2L["114"].ScaleType = Enum.ScaleType.Stretch;
@@ -3109,7 +3109,7 @@ G2L["115"] = Instance.new("ImageButton", G2L["1"]);
 G2L["115"]["BorderSizePixel"] = 0;
 G2L["115"]["AutoButtonColor"] = false;
 G2L["115"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["115"]["Image"] = [[rbxassetid://79377968018480]];
+G2L["115"]["Image"] = [[]];
 G2L["115"]["Size"] = UDim2.new(0, 30, 0, 30);
 G2L["115"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["115"]["Name"] = [[clicker]];
@@ -7986,7 +7986,7 @@ local script = G2L["dd"];
 	local labelDisplay= textBox:WaitForChild("DISPLAY NAME")
 	local imageLabel  = scroll:WaitForChild("AVATA")
 	
-	local IMAGEM_PADRAO = "rbxassetid://89503767054987"
+	local IMAGEM_PADRAO = ""
 	imageLabel.BackgroundTransparency = 1
 	imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
 	imageLabel.ImageTransparency = 0
@@ -8012,15 +8012,10 @@ local script = G2L["dd"];
 
 	local function definirImagemPadrao()
 		imageLabel.Image = IMAGEM_PADRAO
-		fallback77.Visible = false
-		task.spawn(function()
-			local ContentProvider = game:GetService("ContentProvider")
-			pcall(function() ContentProvider:PreloadAsync({imageLabel}) end)
-			task.wait(0.25)
-			if imageLabel.Parent and imageLabel.Image == IMAGEM_PADRAO then
-				fallback77.Visible = not imageLabel.IsLoaded
-			end
-		end)
+		fallback77.Text = "☾"
+		fallback77.TextColor3 = Color3.fromRGB(0, 0, 0)
+		fallback77.Visible = true
+
 	end
 
 	local function resetarInterface()
@@ -8049,6 +8044,8 @@ local script = G2L["dd"];
 				end)
 				imageLabel.Image  = ok and content or IMAGEM_PADRAO
 				fallback77.Visible = not ok
+				fallback77.Text = "☾"
+				fallback77.TextColor3 = Color3.fromRGB(0, 0, 0)
 				labelID.Text      = "ID: " .. player.UserId
 				labelDisplay.Text = player.DisplayName
 				return
@@ -8074,6 +8071,8 @@ local script = G2L["dd"];
 				end)
 				imageLabel.Image  = ok and content or IMAGEM_PADRAO
 				fallback77.Visible = not ok
+				fallback77.Text = "☾"
+				fallback77.TextColor3 = Color3.fromRGB(0, 0, 0)
 				labelID.Text      = "ID: " .. player.UserId
 				labelDisplay.Text = player.DisplayName
 				return
@@ -8171,6 +8170,44 @@ local script = G2L["de"];
 			end
 		end
 	end)
+
+	-- Setas para trocar de jogador enquanto estiver espectando
+	local function criarSeta(nome, simbolo, posicao)
+		local b = Instance.new("TextButton")
+		b.Name = nome
+		b.Text = simbolo
+		b.Font = Enum.Font.GothamBold
+		b.TextSize = 22
+		b.TextColor3 = Color3.fromRGB(220, 190, 255)
+		b.BackgroundColor3 = Color3.fromRGB(48, 27, 70)
+		b.BorderSizePixel = 0
+		b.Size = UDim2.new(0, 32, 0, 32)
+		b.Position = posicao
+		b.ZIndex = 5
+		b.Parent = scroll
+		local c = Instance.new("UICorner"); c.CornerRadius = UDim.new(0, 6); c.Parent = b
+		return b
+	end
+	local setaCima = criarSeta("TargetAnterior", "▲", UDim2.new(0, 18, 0, 125))
+	local setaBaixo = criarSeta("TargetProximo", "▼", UDim2.new(0, 80, 0, 125))
+	local function trocarJogador(direcao)
+		local lista = {}
+		for _, p in ipairs(Players:GetPlayers()) do
+			if p ~= player then table.insert(lista, p) end
+		end
+		table.sort(lista, function(a,b) return a.Name:lower() < b.Name:lower() end)
+		if #lista == 0 then return end
+		local atual = 0
+		for i, p in ipairs(lista) do if p == jogadorAlvo then atual = i break end end
+		local indice = ((atual - 1 + direcao) % #lista) + 1
+		textBox.Text = lista[indice].Name
+		if modoView then
+			local hum = lista[indice].Character and lista[indice].Character:FindFirstChildOfClass("Humanoid")
+			if hum then camera.CameraType = Enum.CameraType.Custom; camera.CameraSubject = hum end
+		end
+	end
+	setaCima.MouseButton1Click:Connect(function() trocarJogador(-1) end)
+	setaBaixo.MouseButton1Click:Connect(function() trocarJogador(1) end)
 	
 	btnView.MouseButton1Click:Connect(function()
 		if jogadorAlvo and jogadorAlvo.Character then
@@ -9217,9 +9254,34 @@ do
     end
 
     G2L["2"].BackgroundColor3 = PURPLE_DARK
+    G2L["2"].BackgroundTransparency = 0
+    -- Remove imagens decorativas antigas; manter apenas cores roxas do painel.
+    if G2L["backgroundImage"] then G2L["backgroundImage"].Visible = false; G2L["backgroundImage"].Image = "" end
+    if G2L["114"] then G2L["114"].Visible = false; G2L["114"].Image = "" end
+    if G2L["115"] then G2L["115"].Image = ""; G2L["115"].BackgroundColor3 = PURPLE_BUTTON end
     G2L["fa"].BackgroundColor3 = BLACK
     G2L["fb"].TextColor3 = LILAC_BRIGHT
     G2L["fc"].TextColor3 = LILAC_BRIGHT
+    -- Identidade 77 no botão redondo que abre/fecha o painel.
+    local abrir = G2L["115"]
+    if abrir then
+        local marca = abrir:FindFirstChild("Marca77") or Instance.new("TextLabel")
+        marca.Name = "Marca77"; marca.BackgroundTransparency = 1
+        marca.Size = UDim2.fromScale(1, 1); marca.Position = UDim2.fromScale(0, 0)
+        marca.Text = "77"; marca.Font = Enum.Font.GothamBold; marca.TextScaled = true
+        marca.TextColor3 = LILAC_BRIGHT; marca.ZIndex = abrir.ZIndex + 1; marca.Parent = abrir
+    end
+    -- Lua preta aparece quando não há jogador selecionado no Target.
+    local target = G2L["e0"]
+    if target then
+        target.Image = ""
+        local lua = target:FindFirstChild("Fallback77") or Instance.new("TextLabel")
+        lua.Name = "Fallback77"; lua.BackgroundTransparency = 1
+        lua.Size = UDim2.fromScale(1, 1); lua.Position = UDim2.fromScale(0, 0)
+        lua.Text = "☾"; lua.Font = Enum.Font.GothamBold; lua.TextScaled = true
+        lua.TextColor3 = Color3.fromRGB(0, 0, 0); lua.ZIndex = target.ZIndex + 1
+        lua.Parent = target
+    end
 end
 
 return G2L["1"], require;
