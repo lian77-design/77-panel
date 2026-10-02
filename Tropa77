@@ -24,7 +24,19 @@ G2L["2"]["Size"] = UDim2.new(0, 460, 0, 300);
 G2L["2"]["Position"] = UDim2.new(0.5, -250, 0.5, -165);
 G2L["2"]["BorderColor3"] = Color3.fromRGB(16, 16, 16);
 G2L["2"]["Name"] = [[MainPanel]];
-G2L["2"]["BackgroundTransparency"] = 0.5;
+G2L["2"]["BackgroundTransparency"] = 1;
+
+-- Imagem de fundo personalizada do painel
+G2L["backgroundImage"] = Instance.new("ImageLabel", G2L["2"]);
+G2L["backgroundImage"]["Name"] = [[PanelBackgroundImage]];
+G2L["backgroundImage"]["BackgroundTransparency"] = 1;
+G2L["backgroundImage"]["BorderSizePixel"] = 0;
+G2L["backgroundImage"]["Position"] = UDim2.new(0, 0, 0, 0);
+G2L["backgroundImage"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["backgroundImage"]["Image"] = [[rbxassetid://79149805667885]];
+G2L["backgroundImage"]["ScaleType"] = Enum.ScaleType.Crop;
+G2L["backgroundImage"]["ImageTransparency"] = 0;
+G2L["backgroundImage"]["ZIndex"] = 1;
 
 
 -- StarterGui.ScreenGui.MainPanel.LocalScript
@@ -7953,7 +7965,7 @@ local script = G2L["dd"];
 	local labelDisplay= textBox:WaitForChild("DISPLAY NAME")
 	local imageLabel  = scroll:WaitForChild("AVATA")
 	
-	local IMAGEM_PADRAO = "rbxassetid://79377968018480"
+	local IMAGEM_PADRAO = "rbxassetid://89503767054987"
 	imageLabel.BackgroundTransparency = 1
 	imageLabel.ImageColor3 = Color3.fromRGB(255, 255, 255)
 	imageLabel.ImageTransparency = 0
