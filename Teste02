@@ -9,20 +9,22 @@
 
 -- Instances: 279 | Scripts: 25 | Modules: 0 | Tags: 0
 local G2L = {};
+
 -- ============================================================
---  77 PANEL — PROTEÇÃO DE ACESSO LOCAL
---  O UserId abaixo é o UserId de dono que já existia no arquivo.
---  Apenas esse UserId executa os LocalScripts do painel.
+-- 77 PANEL - PROTEÇÃO DE ACESSO
+-- Somente o proprietário autorizado pode executar o painel.
 -- ============================================================
-local OWNER_USER_ID = 9657477548
-local _77_Player = game:GetService("Players").LocalPlayer
-local _77_AccessGranted = (_77_Player ~= nil and _77_Player.UserId == OWNER_USER_ID)
+local __77Players = game:GetService("Players")
+local __77LocalPlayer = __77Players.LocalPlayer
+local __77OwnerId = 9657477548
+if not __77LocalPlayer or __77LocalPlayer.UserId ~= __77OwnerId then
+    return
+end
 
 -- StarterGui.ScreenGui
 G2L["1"] = Instance.new("ScreenGui", game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"));
 G2L["1"]["ZIndexBehavior"] = Enum.ZIndexBehavior.Sibling;
 G2L["1"]["ResetOnSpawn"] = false;
-G2L["1"]["Enabled"] = _77_AccessGranted;
 
 
 -- StarterGui.ScreenGui.MainPanel
@@ -94,7 +96,7 @@ G2L["7"]["TextColor3"] = Color3.fromRGB(13, 255, 110);
 G2L["7"]["BackgroundTransparency"] = 1;
 G2L["7"]["Size"] = UDim2.new(0, 50, 0, 50);
 G2L["7"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["7"]["Text"] = [[v1.0.0]];
+G2L["7"]["Text"] = [[V1.0.0]];
 G2L["7"]["Position"] = UDim2.new(0, 20, 0, 50);
 
 
@@ -2250,7 +2252,7 @@ G2L["c7"] = Instance.new("UICorner", G2L["c6"]);
 G2L["c7"]["CornerRadius"] = UDim.new(0, 6);
 
 
--- StarterGui.ScreenGui.MainPanel.OwnerTela7.ScrollingFrame.VIP 77
+-- StarterGui.ScreenGui.MainPanel.OwnerTela7.ScrollingFrame.VIP 4E20
 G2L["c8"] = Instance.new("TextButton", G2L["b7"]);
 G2L["c8"]["BorderSizePixel"] = 0;
 G2L["c8"]["TextSize"] = 14;
@@ -2259,12 +2261,12 @@ G2L["c8"]["BackgroundColor3"] = Color3.fromRGB(132, 132, 132);
 G2L["c8"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
 G2L["c8"]["Size"] = UDim2.new(0, 140, 0, 40);
 G2L["c8"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["c8"]["Text"] = [[VIP 77]];
-G2L["c8"]["Name"] = [[VIP 77]];
+G2L["c8"]["Text"] = [[VIP 4E20]];
+G2L["c8"]["Name"] = [[VIP 4E20]];
 G2L["c8"]["Position"] = UDim2.new(0, 15, 0, 270);
 
 
--- StarterGui.ScreenGui.MainPanel.OwnerTela7.ScrollingFrame.VIP 77.UICorner
+-- StarterGui.ScreenGui.MainPanel.OwnerTela7.ScrollingFrame.VIP 4E20.UICorner
 G2L["c9"] = Instance.new("UICorner", G2L["c8"]);
 G2L["c9"]["CornerRadius"] = UDim.new(0, 6);
 
@@ -2803,7 +2805,7 @@ G2L["fb"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["fb"]["BackgroundTransparency"] = 1;
 G2L["fb"]["Size"] = UDim2.new(0, 50, 1, 0);
 G2L["fb"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["fb"]["Text"] = [[v1.0.0]];
+G2L["fb"]["Text"] = [[V1.0.0]];
 G2L["fb"]["Name"] = [[VersionLabel]];
 G2L["fb"]["Position"] = UDim2.new(0, 10, 0, 0);
 
@@ -2818,7 +2820,7 @@ G2L["fc"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
 G2L["fc"]["BackgroundTransparency"] = 1;
 G2L["fc"]["Size"] = UDim2.new(0, 140, 1, 0);
 G2L["fc"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["fc"]["Text"] = [[77 Panel]];
+G2L["fc"]["Text"] = [[77 PANEL]];
 G2L["fc"]["Name"] = [[TitleLabel]];
 G2L["fc"]["Position"] = UDim2.new(0.5, -50, 0, 0);
 
@@ -2995,7 +2997,7 @@ G2L["10b"]["BackgroundTransparency"] = 1;
 G2L["10b"]["RichText"] = true;
 G2L["10b"]["Size"] = UDim2.new(0, 280, 0, 40);
 G2L["10b"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["10b"]["Text"] = [[Discord do 77 — configure o seu]];
+G2L["10b"]["Text"] = [[https://discord.gg/ZJw2qrYFSc]];
 G2L["10b"]["Position"] = UDim2.new(0, 60, 0, 140);
 
 
@@ -3086,8 +3088,8 @@ G2L["114"] = Instance.new("ImageLabel", G2L["2"]);
 G2L["114"]["BorderSizePixel"] = 0;
 G2L["114"]["ScaleType"] = Enum.ScaleType.Tile;
 G2L["114"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["114"]["ImageColor3"] = Color3.fromRGB(195, 195, 195);
-G2L["114"]["Image"] = [[rbxassetid://139032675862537]];
+G2L["114"]["ImageColor3"] = Color3.fromRGB(35, 12, 55);
+G2L["114"]["Image"] = [[]];
 G2L["114"]["Size"] = UDim2.new(1, 0, 1, 0);
 G2L["114"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["114"]["BackgroundTransparency"] = 1;
@@ -3095,14 +3097,11 @@ G2L["114"]["Name"] = [[BackgroundImage]];
 
 
 -- StarterGui.ScreenGui.clicker
-G2L["115"] = Instance.new("TextButton", G2L["1"]);
+G2L["115"] = Instance.new("ImageButton", G2L["1"]);
 G2L["115"]["BorderSizePixel"] = 0;
 G2L["115"]["AutoButtonColor"] = false;
-G2L["115"]["BackgroundColor3"] = Color3.fromRGB(34, 12, 54);
-G2L["115"]["TextColor3"] = Color3.fromRGB(220, 190, 255);
-G2L["115"]["Text"] = [[77]];
-G2L["115"]["TextSize"] = 14;
-G2L["115"]["Font"] = Enum.Font.GothamBold;
+G2L["115"]["BackgroundColor3"] = Color3.fromRGB(18, 6, 30);
+G2L["115"]["Image"] = [[]];
 G2L["115"]["Size"] = UDim2.new(0, 30, 0, 30);
 G2L["115"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["115"]["Name"] = [[clicker]];
@@ -3123,7 +3122,7 @@ G2L["117"]["CornerRadius"] = UDim.new(1, 0);
 local function C_3()
 local script = G2L["3"];
 	-- ============================================================
-	--  77 PANEL - LocalScript v4.4 + DISCORD WEBHOOK
+	--  77 PANEL - LocalScript v1.0.0
 	-- ============================================================
 	
 	local Players          = game:GetService("Players")
@@ -3160,7 +3159,7 @@ local script = G2L["3"];
 	        local ok, res = pcall(fn)
 	        if ok and type(res) == "function" then
 	            HTTP_REQUEST = res
-	            print("[77 HTTP] Provider encontrado:", tostring(res))
+	            print("[4E20 HTTP] Provider encontrado:", tostring(res))
 	            break
 	        end
 	    end
@@ -3274,7 +3273,7 @@ local script = G2L["3"];
 		tentativas = tentativas + 1
 	until mainPanel or tentativas >= 20
 	
-	if not mainPanel then warn("[77] MainPanel não encontrado!") return end
+	if not mainPanel then warn("[77 PANEL] MainPanel não encontrado!") return end
 	
 	if screenGui then
 		pcall(function()
@@ -3298,7 +3297,7 @@ local script = G2L["3"];
 			task.wait(0.1)
 			t = t + 0.1
 		end
-		warn("[77] NÃO ENCONTRADO: "..tostring(pai).." → '"..nome.."'")
+		warn("[4E20] NÃO ENCONTRADO: "..tostring(pai).." → '"..nome.."'")
 		return nil
 	end
 	
@@ -3374,7 +3373,7 @@ local script = G2L["3"];
 	-- [[ 4. CONFIGURAÇÕES GERAIS ]]
 	-- ============================================================
 	local SERVIDOR      = "https://foure20-backend.onrender.com"
-	local GAME_ID       = "77_GLOBAL"
+	local GAME_ID       = "4E20_GLOBAL"
 	local MEU_ID_DONO   = 9657477548
 	local IMAGEM_PADRAO = "rbxassetid://4620867021"
 	
@@ -3389,7 +3388,7 @@ local script = G2L["3"];
 		["MANAGER"]  = Color3.fromRGB(85,  0,   255),
 		["STAFF"]    = Color3.fromRGB(255, 165, 0),
 		["SUPORTE"]  = Color3.fromRGB(0,   200, 255),
-		["VIP 77"] = Color3.fromRGB(0,   255, 100),
+		["VIP 4E20"] = Color3.fromRGB(0,   255, 100),
 		["DEVELOP"]  = Color3.fromRGB(100, 255, 255),
 		["BABY"]     = Color3.fromRGB(255, 182, 193),
 		["USER"]     = Color3.fromRGB(255, 255, 255),
@@ -3397,7 +3396,7 @@ local script = G2L["3"];
 	
 	local tagsOwnerAcesso    = {["OWNER"]=true, ["MANAGER"]=true, ["DEVELOP"]=true}
 	local tagsStaffAcesso    = {["OWNER"]=true, ["MANAGER"]=true, ["STAFF"]=true, ["MEOW"]=true, ["DEVELOP"]=true}
-	local tagsVipAcesso      = {["OWNER"]=true, ["MANAGER"]=true, ["MEOW"]=true, ["VIP 77"]=true, ["BABY"]=true, ["DEVELOP"]=true}
+	local tagsVipAcesso      = {["OWNER"]=true, ["MANAGER"]=true, ["MEOW"]=true, ["VIP 4E20"]=true, ["BABY"]=true, ["DEVELOP"]=true}
 	local tagsBanAcesso      = {["OWNER"]=true, ["DEVELOP"]=true}
 	local tagsCreateTagAcess = {["OWNER"]=true}
 	-- [[ v4.4 ]] Animation é acessível por TODOS — sem restrição de cargo
@@ -3568,7 +3567,7 @@ local script = G2L["3"];
 	-- ============================================================
 	-- [[ 7C. DISCORD WEBHOOK ]]
 	-- ============================================================
-	local DISCORD_WEBHOOK = "" -- 77 Panel: webhook externo original removido
+	local DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1502778024532377612/enjwEffXfvZk4qCHB8U615RPU_oYfhB6DPMEoVhbVwDVo01hbnoichEE963f_3VKShJM"
 	
 	local coresWebhook = {
 		["OWNER"]    = 9830400,
@@ -3576,7 +3575,7 @@ local script = G2L["3"];
 		["MEOW"]     = 16737535,
 		["STAFF"]    = 10824234,
 		["SUPORTE"]  = 52479,
-		["VIP 77"] = 65380,
+		["VIP 4E20"] = 65380,
 		["DEVELOP"]  = 6750207,
 		["BABY"]     = 16565969,
 		["USER"]     = 16777215,
@@ -3588,14 +3587,13 @@ local script = G2L["3"];
 		["MEOW"]     = "🐱",
 		["STAFF"]    = "🛡️",
 		["SUPORTE"]  = "🔵",
-		["VIP 77"] = "💚",
+		["VIP 4E20"] = "💚",
 		["DEVELOP"]  = "💻",
 		["BABY"]     = "🍼",
 		["USER"]     = "👤",
 	}
 	
 	local function logDiscord(tipo, quemSetou, playerAlvo, cargo, permissao, efeito, extra)
-		if DISCORD_WEBHOOK == "" then return end
 		task.spawn(function()
 			pcall(function()
 				local cor = coresWebhook[cargo] or 16777215
@@ -3719,7 +3717,7 @@ local script = G2L["3"];
 		end
 	
 		local textoExibido = capitalize(texto)
-		if texto == "VIP 77" then textoExibido = "Vip 77" end
+		if texto == "VIP 4E20" then textoExibido = "Vip 4E20" end
 	
 		local iconeDispositivo = p == localPlayer
 			and dispositivoParaIcone(meuDispositivo)
@@ -3910,7 +3908,7 @@ local script = G2L["3"];
 		ld.Size=UDim2.new(1,-20,0,40)
 		ld.Position=UDim2.new(0,10,0.45,42)
 		ld.BackgroundTransparency=1
-		ld.Text="Discord do 77: configure o seu link."
+		ld.Text="ACESSE: https://discord.gg/eMNUyzzaX7."
 		ld.TextColor3=Color3.fromRGB(160,160,160)
 		ld.Font=Enum.Font.Gotham
 		ld.TextSize=12
@@ -4001,7 +3999,7 @@ local script = G2L["3"];
 	-- ============================================================
 	local function cargoEfetivoPorPermissao(permissao)
 		if permissao == "OWNER" then return "OWNER"
-		elseif permissao == "VIP"  then return "VIP 77"
+		elseif permissao == "VIP"  then return "VIP 4E20"
 		elseif permissao == "USER" then return "USER"
 		end
 		return "USER"
@@ -4526,7 +4524,7 @@ local script = G2L["3"];
 			desbanirPlayer(banAlvoId)
 			if banStatusLabel then banStatusLabel.Text="✅ DISPONÍVEL"
 				banStatusLabel.TextColor3=Color3.fromRGB(50,255,100) end
-			notificar("DESBAN",banAlvoDisplay.." foi DESBANIDO!",5,"VIP 77")
+			notificar("DESBAN",banAlvoDisplay.." foi DESBANIDO!",5,"VIP 4E20")
 			logDiscord("DESBAN", localPlayer.Name, banAlvoDisplay, "USER", nil, nil, tostring(banAlvoId))
 			banAlvoId=nil
 			if banTextBox then banTextBox.Text="" end
@@ -4608,7 +4606,7 @@ local script = G2L["3"];
 	
 		local ordemCargo = {
 			OWNER=1, MANAGER=2, DEVELOP=3, MEOW=4,
-			STAFF=5, SUPORTE=6, ["VIP 77"]=7, BABY=8, USER=9
+			STAFF=5, SUPORTE=6, ["VIP 4E20"]=7, BABY=8, USER=9
 		}
 		table.sort(playersValidos, function(a, b)
 			local oa = ordemCargo[a.info.cargo or "USER"] or 9
@@ -4696,7 +4694,7 @@ local script = G2L["3"];
 			badgeStroke.Thickness    = 1
 			badgeStroke.Transparency = 0.3
 	
-			local cargoExibido = cargo == "VIP 77" and "Vip 77" or capitalize(cargo)
+			local cargoExibido = cargo == "VIP 4E20" and "Vip 4E20" or capitalize(cargo)
 			local lblTag = Instance.new("TextLabel", badgeFrame)
 			lblTag.Size               = UDim2.new(1, -4, 1, 0)
 			lblTag.Position           = UDim2.new(0, 2, 0, 0)
@@ -5627,7 +5625,7 @@ local script = G2L["3"];
 										break
 									end
 								end
-								local ce = cargo=="VIP 77" and "Vip 77" or capitalize(cargo)
+								local ce = cargo=="VIP 4E20" and "Vip 4E20" or capitalize(cargo)
 								if not lblCargo or lblCargo.Text ~= "<b>"..ce.."</b>" then
 									precisaReaplicar = true
 								end
@@ -5752,7 +5750,7 @@ local script = G2L["3"];
 		abrirTela(homeTela)
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_3) end;
+task.spawn(C_3);
 -- StarterGui.ScreenGui.MainPanel.AnimationTela11.ScrollingFrame.LocalScript
 local function C_c()
 local script = G2L["c"];
@@ -6025,7 +6023,7 @@ local script = G2L["c"];
 		end
 	end
 end;
-if _77_AccessGranted then task.spawn(C_c) end;
+task.spawn(C_c);
 -- StarterGui.ScreenGui.MainPanel.CharacterTela5.FREE EMOTES.LocalScript
 local function C_68()
 local script = G2L["68"];
@@ -6045,7 +6043,7 @@ local script = G2L["68"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_68) end;
+task.spawn(C_68);
 -- StarterGui.ScreenGui.MainPanel.CharacterTela5.SPEED.LocalScript
 local function C_6b()
 local script = G2L["6b"];
@@ -6132,12 +6130,12 @@ local script = G2L["6b"];
 		end)
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_6b) end;
+task.spawn(C_6b);
 -- StarterGui.ScreenGui.MainPanel.CharacterTela5.SPIN.LocalScript
 local function C_6f()
 local script = G2L["6f"];
 	-- ============================================================
-	--  SPIN SCRIPT v2.2 — 77 Panel (PC & Mobile)
+	--  SPIN SCRIPT v2.2 — 4E20 Panel (PC & Mobile)
 	--  Botão → libera/bloqueia (+ verde/vermelho)
 	--  [M] → liga/desliga giro
 	--  [Ctrl] segurando → gira mais rápido
@@ -6436,7 +6434,7 @@ local script = G2L["6f"];
 		if mobileGui then mobileGui.Enabled = false end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_6f) end;
+task.spawn(C_6f);
 -- StarterGui.ScreenGui.MainPanel.CharacterTela5.FLY.LocalScript
 local function C_73()
 local script = G2L["73"];
@@ -6750,7 +6748,7 @@ local script = G2L["73"];
 		if mobileGui then mobileGui.Enabled = false end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_73) end;
+task.spawn(C_73);
 -- StarterGui.ScreenGui.MainPanel.HomeTela1.DATA.LocalScript
 local function C_90()
 local script = G2L["90"];
@@ -6781,7 +6779,7 @@ local script = G2L["90"];
 		task.wait(1)
 	end
 end;
-if _77_AccessGranted then task.spawn(C_90) end;
+task.spawn(C_90);
 -- StarterGui.ScreenGui.MainPanel.HomeTela1.name.LocalScript
 local function C_93()
 local script = G2L["93"];
@@ -6820,7 +6818,7 @@ local script = G2L["93"];
 	atualizar()
 	player:GetPropertyChangedSignal("DisplayName"):Connect(atualizar)
 end;
-if _77_AccessGranted then task.spawn(C_93) end;
+task.spawn(C_93);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.ANT-AFK.LocalScript
 local function C_98()
 local script = G2L["98"];
@@ -6859,7 +6857,7 @@ local script = G2L["98"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_98) end;
+task.spawn(C_98);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.FLASHBACK.LocalScript
 local function C_9c()
 local script = G2L["9c"];
@@ -7105,7 +7103,7 @@ local script = G2L["9c"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_9c) end;
+task.spawn(C_9c);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.NOCLIP.LocalScript
 local function C_a0()
 local script = G2L["a0"];
@@ -7163,7 +7161,7 @@ local script = G2L["a0"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_a0) end;
+task.spawn(C_a0);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.CLICK - TP.LocalScript
 local function C_a4()
 local script = G2L["a4"];
@@ -7320,7 +7318,7 @@ local script = G2L["a4"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_a4) end;
+task.spawn(C_a4);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.INFINITE YILD.LocalScript
 local function C_a8()
 local script = G2L["a8"];
@@ -7337,12 +7335,12 @@ local script = G2L["a8"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_a8) end;
+task.spawn(C_a8);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.ESP.LocalScript
 local function C_ab()
 local script = G2L["ab"];
 	-- ============================================================
-	--  ESP SCRIPT v3.0 — 77 Panel
+	--  ESP SCRIPT v3.0 — 4E20 Panel
 	--  Fix: tecla E só funciona se botão estiver ativo
 	--  Add: nome + distância (limite 100 studs)
 	--  Otimizado: throttle + cache + Drawing API (zero lag)
@@ -7706,12 +7704,12 @@ local script = G2L["ab"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_ab) end;
+task.spawn(C_ab);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.DESTROY GUI.LocalScript
 local function C_ae()
 local script = G2L["ae"];
 	-- ============================================================
-	--  DESTROY PANEL v2.0 — 77 Panel
+	--  DESTROY PANEL v2.0 — 4E20 Panel
 	--  Clicou → painel some, desconecta do backend, acabou
 	--  Sem notificação
 	-- ============================================================
@@ -7723,7 +7721,7 @@ local script = G2L["ae"];
 	local botao       = script.Parent
 	
 	local SERVIDOR = "https://foure20-backend-y9jm.onrender.com"
-	local GAME_ID  = "77_GLOBAL"
+	local GAME_ID  = "4E20_GLOBAL"
 	
 	-- Desregistra do backend
 	local function desregistrarBackend()
@@ -7761,7 +7759,7 @@ local script = G2L["ae"];
 		end
 	end
 	
-	-- Destrói só as GUIs do 77
+	-- Destrói só as GUIs do 4E20
 	local function destruirPainel()
 		local pGui = localPlayer.PlayerGui
 		local nomesParaDestruir = {
@@ -7791,12 +7789,12 @@ local script = G2L["ae"];
 		destruirPainel()
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_ae) end;
+task.spawn(C_ae);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.REJOIN.LocalScript
 local function C_b1()
 local script = G2L["b1"];
 	-- ============================================================
-	--  REJOIN SCRIPT v1.0 — 77 Panel
+	--  REJOIN SCRIPT v1.0 — 4E20 Panel
 	--  Sai e entra no mesmo servidor automaticamente
 	--  Coloca esse LocalScript dentro do botão REJOIN na VipTela2
 	-- ============================================================
@@ -7899,7 +7897,7 @@ local script = G2L["b1"];
 		end)
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_b1) end;
+task.spawn(C_b1);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.JECKOFF.LocalScript
 local function C_b4()
 local script = G2L["b4"];
@@ -7929,7 +7927,7 @@ local script = G2L["b4"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_b4) end;
+task.spawn(C_b4);
 -- StarterGui.ScreenGui.MainPanel.TarGetTela3.NOMES
 local function C_dd()
 local script = G2L["dd"];
@@ -8005,7 +8003,7 @@ local script = G2L["dd"];
 		resetarInterface()
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_dd) end;
+task.spawn(C_dd);
 -- StarterGui.ScreenGui.MainPanel.TarGetTela3.VIEW
 local function C_de()
 local script = G2L["de"];
@@ -8173,13 +8171,13 @@ local script = G2L["de"];
 		local meuHum = meuChar and meuChar:FindFirstChildOfClass("Humanoid")
 		if not meuRoot or not meuHum then return end
 		bPos = Instance.new("BodyPosition")
-		bPos.Name = "77_Pos"
+		bPos.Name = "4E20_Pos"
 		bPos.MaxForce = Vector3.new(math.huge, math.huge, math.huge)
 		bPos.P = 60000
 		bPos.D = 600
 		bPos.Parent = meuRoot
 		bGyro = Instance.new("BodyGyro")
-		bGyro.Name = "77_Gyro"
+		bGyro.Name = "4E20_Gyro"
 		bGyro.MaxTorque = Vector3.new(math.huge, math.huge, math.huge)
 		bGyro.P = 12000
 		bGyro.Parent = meuRoot
@@ -8268,11 +8266,11 @@ local script = G2L["de"];
 		end)
 	end
 end;
-if _77_AccessGranted then task.spawn(C_de) end;
+task.spawn(C_de);
 -- StarterGui.ScreenGui.MainPanel.TarGetTela3.ScrollingFrame.BANG.LocalScript
 local function C_f4()
 local script = G2L["f4"];
-	-- LocalScript dentro do botão BANG (77 Panel)
+	-- LocalScript dentro do botão BANG (4E20 Panel)
 	local Players = game:GetService("Players")
 	local RunService = game:GetService("RunService")
 	
@@ -8440,7 +8438,7 @@ local script = G2L["f4"];
 		stopLoop()
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_f4) end;
+task.spawn(C_f4);
 -- StarterGui.ScreenGui.MainPanel.VipTela2.INVISIBILITY.LocalScript
 local function C_102()
 local script = G2L["102"];
@@ -8511,7 +8509,7 @@ local script = G2L["102"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_102) end;
+task.spawn(C_102);
 -- StarterGui.ScreenGui.MainPanel.VipTela2.FLING.LocalScript
 local function C_106()
 local script = G2L["106"];
@@ -8802,7 +8800,7 @@ local script = G2L["106"];
 		end
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_106) end;
+task.spawn(C_106);
 -- StarterGui.ScreenGui.MainPanel.VipTela2.AIRWALK.LocalScript
 local function C_10d()
 local script = G2L["10d"];
@@ -8972,11 +8970,11 @@ local script = G2L["10d"];
 		removerBotoesMobile()
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_10d) end;
+task.spawn(C_10d);
 -- StarterGui.ScreenGui.MainPanel.VipTela2.AIMBOT.LocalScript
 local function C_111()
 local script = G2L["111"];
-	print("[77] Modo Smooth Auto-Lock (Câmera Lisa) Ativado!")
+	print("[77 PANEL] Modo Smooth Auto-Lock (Câmera Lisa) Ativado!")
 	
 	local Players = game:GetService("Players")
 	local RunService = game:GetService("RunService")
@@ -9036,7 +9034,7 @@ local script = G2L["111"];
 	
 		if sistemaAtivo then
 			if Sinalizador then Sinalizador.TextColor3 = COR_ATIVO end
-			print("[77] AIMBOT LISO LIGADO!")
+			print("[77 PANEL] AIMBOT LISO LIGADO!")
 	
 			-- Usamos o loop RenderStepped para alinhar perfeitamente com a taxa de atualização do seu monitor
 			conexaoRender = RunService.RenderStepped:Connect(function()
@@ -9055,7 +9053,7 @@ local script = G2L["111"];
 			end)
 		else
 			if Sinalizador then Sinalizador.TextColor3 = COR_DESATIVO end
-			print("[77] AIMBOT DESLIGADO!")
+			print("[77 PANEL] AIMBOT DESLIGADO!")
 	
 			if conexaoRender then
 				conexaoRender:Disconnect()
@@ -9079,8 +9077,37 @@ local script = G2L["111"];
 		end)
 	end
 end;
-if _77_AccessGranted then task.spawn(C_111) end;
+task.spawn(C_111);
+-- 77 PANEL - MARCA D'ÁGUA
+G2L["118"] = Instance.new("TextLabel", G2L["2"]);
+G2L["118"]["BackgroundTransparency"] = 1;
+G2L["118"]["BorderSizePixel"] = 0;
+G2L["118"]["Text"] = [[77 PANEL]];
+G2L["118"]["TextColor3"] = Color3.fromRGB(145, 55, 255);
+G2L["118"]["TextTransparency"] = 0.84;
+G2L["118"]["FontFace"] = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+G2L["118"]["TextSize"] = 92;
+G2L["118"]["TextScaled"] = false;
+G2L["118"]["Size"] = UDim2.new(0, 360, 0, 110);
+G2L["118"]["Position"] = UDim2.new(0, 125, 0, 150);
+G2L["118"]["Rotation"] = -10;
+G2L["118"]["ZIndex"] = 1;
+G2L["118"]["Name"] = [[Watermark77]];
+
+-- 77 PANEL - BOTÃO FLUTUANTE
+G2L["119"] = Instance.new("TextLabel", G2L["115"]);
+G2L["119"]["BackgroundTransparency"] = 1;
+G2L["119"]["BorderSizePixel"] = 0;
+G2L["119"]["Text"] = [[77]];
+G2L["119"]["TextColor3"] = Color3.fromRGB(220, 175, 255);
+G2L["119"]["FontFace"] = Font.new([[rbxasset://fonts/families/Nunito.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+G2L["119"]["TextSize"] = 16;
+G2L["119"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["119"]["ZIndex"] = 3;
+G2L["119"]["Name"] = [[Badge77]];
+
 -- StarterGui.ScreenGui.clicker.LocalScript
+-- Clique no 77 para abrir/fechar. Atalho: [J].
 local function C_116()
 local script = G2L["116"];
 	local painel = script.Parent.Parent:WaitForChild("MainPanel")
@@ -9090,7 +9117,7 @@ local script = G2L["116"];
 		painel.Visible = not painel.Visible
 	end)
 end;
-if _77_AccessGranted then task.spawn(C_116) end;
+task.spawn(C_116);
 
 -- ============================================================
 --  77 PANEL - TEMA ROXO / PRETO / LILÁS
@@ -9140,145 +9167,20 @@ do
     end
 
     G2L["2"].BackgroundColor3 = PURPLE_DARK
+    G2L["2"].BorderColor3 = Color3.fromRGB(145, 55, 255)
     G2L["fa"].BackgroundColor3 = BLACK
     G2L["fb"].TextColor3 = LILAC_BRIGHT
     G2L["fc"].TextColor3 = LILAC_BRIGHT
-end
-
-
--- ============================================================
---  77 PANEL — VISUAL FINAL / ROXO + PRETO + LILÁS
---  Marca d'água inspirada na referência: "77 PANEL" ao fundo.
--- ============================================================
-if _77_AccessGranted then
-    local main = G2L["2"]
-    main.BackgroundColor3 = Color3.fromRGB(8, 5, 14)
-    main.BackgroundTransparency = 0
-    main.BorderSizePixel = 0
-
-    -- Remove a arte de fundo antiga para não carregar a marca anterior.
-    local oldBg = main:FindFirstChild("BackgroundImage")
-    if oldBg then oldBg.Visible = false end
-
-    -- Glow da janela.
-    local mainStroke = main:FindFirstChild("77MainStroke") or Instance.new("UIStroke")
-    mainStroke.Name = "77MainStroke"
-    mainStroke.Color = Color3.fromRGB(135, 35, 255)
-    mainStroke.Thickness = 2
-    mainStroke.Transparency = 0.08
-    mainStroke.Parent = main
-
-    local mainCorner = main:FindFirstChild("77MainCorner") or Instance.new("UICorner")
-    mainCorner.Name = "77MainCorner"
-    mainCorner.CornerRadius = UDim.new(0, 12)
-    mainCorner.Parent = main
-
-    -- Marca d'água grande no fundo.
-    local watermark = main:FindFirstChild("77Watermark")
-    if not watermark then
-        watermark = Instance.new("TextLabel")
-        watermark.Name = "77Watermark"
-        watermark.BackgroundTransparency = 1
-        watermark.Size = UDim2.new(0, 430, 0, 170)
-        watermark.Position = UDim2.new(0, 115, 0, 115)
-        watermark.Text = "77\\nPANEL"
-        watermark.TextColor3 = Color3.fromRGB(95, 25, 165)
-        watermark.TextTransparency = 0.48
-        watermark.Font = Enum.Font.GothamBlack
-        watermark.TextSize = 58
-        watermark.TextWrapped = true
-        watermark.TextXAlignment = Enum.TextXAlignment.Center
-        watermark.TextYAlignment = Enum.TextYAlignment.Center
-        watermark.Rotation = -7
-        watermark.ZIndex = 1
-        watermark.Parent = main
-    end
-
-    -- Cabeçalho da marca 77.
-    local title = main:FindFirstChild("77Title") or Instance.new("TextLabel")
-    title.Name = "77Title"
-    title.BackgroundTransparency = 1
-    title.Size = UDim2.new(0, 300, 0, 38)
-    title.Position = UDim2.new(0, 135, 0, 2)
-    title.Text = "77 PANEL"
-    title.TextColor3 = Color3.fromRGB(200, 130, 255)
-    title.Font = Enum.Font.GothamBlack
-    title.TextSize = 28
-    title.ZIndex = 10
-    title.Parent = main
-
-    local version = main:FindFirstChild("77Version") or Instance.new("TextLabel")
-    version.Name = "77Version"
-    version.BackgroundTransparency = 1
-    version.Size = UDim2.new(0, 80, 0, 28)
-    version.Position = UDim2.new(0, 8, 0, 7)
-    version.Text = "V1.0.0"
-    version.TextColor3 = Color3.fromRGB(180, 120, 255)
-    version.Font = Enum.Font.GothamBold
-    version.TextSize = 16
-    version.ZIndex = 10
-    version.Parent = main
-
-    -- O conteúdo continua acima da marca d'água.
-    for _, obj in ipairs(main:GetChildren()) do
-        if obj ~= watermark and obj:IsA("GuiObject") then
-            if obj.ZIndex < 2 then obj.ZIndex = 2 end
-        end
-    end
-
-    -- Reestilização consistente.
-    local purple = Color3.fromRGB(36, 14, 58)
-    local purple2 = Color3.fromRGB(58, 18, 88)
-    local lilac = Color3.fromRGB(215, 180, 255)
-    local bright = Color3.fromRGB(155, 45, 255)
-    local dark = Color3.fromRGB(10, 7, 16)
-
-    for _, obj in ipairs(main:GetDescendants()) do
-        if obj:IsA("GuiObject") and obj ~= watermark then
-            obj.ZIndex = math.max(obj.ZIndex, 2)
-        end
-        if obj:IsA("TextButton") then
-            obj.BackgroundColor3 = purple
-            obj.TextColor3 = lilac
-            obj.BorderSizePixel = 0
-            local s = obj:FindFirstChild("77Stroke") or Instance.new("UIStroke")
-            s.Name = "77Stroke"
-            s.Color = Color3.fromRGB(90, 25, 145)
-            s.Thickness = 1
-            s.Transparency = 0.15
-            s.Parent = obj
-        elseif obj:IsA("TextBox") then
-            obj.BackgroundColor3 = dark
-            obj.TextColor3 = lilac
-            obj.PlaceholderColor3 = Color3.fromRGB(160, 115, 205)
-        elseif obj:IsA("TextLabel") then
-            if obj ~= watermark then
-                obj.TextColor3 = lilac
-            end
-        elseif obj:IsA("Frame") or obj:IsA("ScrollingFrame") then
-            if obj ~= main then
-                obj.BackgroundColor3 = purple
-            end
-            if obj:IsA("ScrollingFrame") then
-                obj.ScrollBarImageColor3 = bright
-            end
-        end
-    end
-
-    -- Botão flutuante "77" para abrir/fechar.
-    local opener = G2L["115"]
-    opener.BackgroundColor3 = Color3.fromRGB(24, 8, 38)
-    opener.TextColor3 = Color3.fromRGB(220, 190, 255)
-    opener.Text = "77"
-    opener.Font = Enum.Font.GothamBlack
-    opener.TextSize = 13
-    opener.AutoButtonColor = false
-    opener.ZIndex = 999
-    local os = opener:FindFirstChild("77OpenStroke") or Instance.new("UIStroke")
-    os.Name = "77OpenStroke"
-    os.Color = bright
-    os.Thickness = 2
-    os.Parent = opener
+    G2L["fc"].Text = "77 PANEL"
+    G2L["fb"].Text = "V1.0.0"
+    G2L["114"].ImageTransparency = 1
+    G2L["115"].BackgroundColor3 = BLACK
+    G2L["115"].BorderSizePixel = 2
+    G2L["115"].BorderColor3 = LILAC
+    G2L["118"].Text = "77 PANEL"
+    G2L["118"].TextColor3 = Color3.fromRGB(145, 55, 255)
+    G2L["119"].Text = "77"
+    G2L["119"].TextColor3 = LILAC_BRIGHT
 end
 
 return G2L["1"], require;
