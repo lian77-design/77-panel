@@ -1,0 +1,776 @@
+-- =====================================================
+-- 77 PANEL - SISTEMA DE CARGOS SALVO
+-- Você é o DONO. Só você dá cargo.
+-- =====================================================
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local LP = Players.LocalPlayer
+local PG = LP:WaitForChild("PlayerGui")
+
+-- ═══════════════════════════════════════════════════
+-- CONFIGURAÇÃO — MUDE AQUI
+-- ═══════════════════════════════════════════════════
+local DONO = "SEU_NOME_AQUI"  -- ← Coloque seu nome de usuário do Roblox
+local ARQUIVO = "77cargos.json"
+
+-- ═══════════════════════════════════════════════════
+-- SISTEMA DE SALVAMENTO
+-- ═══════════════════════════════════════════════════
+local Cargos = {}
+
+local function temArquivo()
+    local ok = pcall(function() return readfile(ARQUIVO) end)
+    return ok
+end
+
+local function salvarCargos()
+    local ok, err = pcall(function()
+        writefile(ARQUIVO, game:GetService("HttpService"):JSONEncode(Cargos))
+    end)
+    if ok then
+        print("[77] Cargos salvos!")
+    else
+        warn("[77] Erro ao salvar: " .. tostring(err))
+    end
+end
+
+local function carregarCargos()
+    if temArquivo() then
+        local ok, dados = pcall(function()
+            return game:GetService("HttpService"):JSONDecode(readfile(ARQUIVO))
+        end)
+        if ok and dados then
+            Cargos = dados
+            print("[77] Cargos carregados!")
+        else
+            Cargos = {}
+        end
+    else
+        Cargos = {}
+        salvarCargos()
+    end
+
+    -- Garante que o Dono está sempre na lista
+    Cargos[DONO] = "Dono"
+    salvarCargos()
+end
+
+carregarCargos()
+
+-- ═══════════════════════════════════════════════════
+-- PERMISSÕES
+-- ═══════════════════════════════════════════════════
+local Nivel = {
+    Dono  = 3,
+    Admin = 2,
+    VIP   = 1,
+    User  = 0,
+}
+
+local function MeuCargo()
+    return Cargos[LP.Name] or "User"
+end
+
+local function SouDono()
+    return LP.Name == DONO
+end
+
+local function MeuNivel()
+    return Nivel[MeuCargo()] or 0
+end
+
+local function PodeUsar(nivelMin)
+    return MeuNivel() >= nivelMin
+end-- ═══════════════════════════════════════════════════
+-- FUNÇÕES DE CARGO
+-- ═══════════════════════════════════════════════════
+
+-- Dar cargo (SÓ O DONO)
+local function DarCargo(nome, cargo)
+    if not SouDono() then
+        return false, "Só o Dono pode dar cargo"
+    end
+    if not Nivel[cargo] then
+        return false, "Cargo inválido"
+    end
+    Cargos[nome] = cargo
+    salvarCargos()
+    return true, nome .. " virou " .. cargo
+end
+
+-- Remover cargo
+local function RemoverCargo(nome)
+    if not SouDono() then
+        return false, "Só o Dono pode remover"
+    end
+    if nome == DONO then
+        return false, "Não pode remover o Dono"
+    end
+    Cargos[nome] = nil
+    salvarCargos()
+    return true, "Cargo de " .. nome .. " removido"
+end
+
+-- Listar cargos
+local function ListarCargos()
+    local lista = {}
+    for nome, cargo in pairs(Cargos) do
+        table.insert(lista, nome .. " → " .. cargo)
+    end
+    return lista
+end
+
+-- Criação de UI básica (pra montar o painel)
+local function novo(classe, props, pai)
+    local i = Instance.new(classe)
+    for k, v in pairs(props) do i[k] = v end
+    i.Parent = pai
+    return i
+end
+
+local function borda(obj, raio)
+    local u = Instance.new("UICorner")
+    u.CornerRadius = UDim.new(0, raio)
+    u.Parent = obj
+end
+
+local function stroke(obj, cor, esp)
+    local s = Instance.new("UIStroke")
+    s.Color = cor
+    s.Thickness = esp
+    s.Parent = obj
+    return s
+end
+
+-- Cores
+local C = {
+    BG     = Color3.fromRGB(10, 3, 20),
+    Card   = Color3.fromRGB(18, 6, 35),
+    Roxo   = Color3.fromRGB(91, 33, 182),
+    Neon   = Color3.fromRGB(168, 85, 247),
+    Lilas  = Color3.fromRGB(200, 120, 255),
+    Branco = Color3.fromRGB(240, 240, 240),
+    Cinza  = Color3.fromRGB(160, 150, 180),
+    Verde  = Color3.fromRGB(0, 220, 100),
+    Vermelho = Color3.fromRGB(255, 60, 60),
+}
+
+-- ═══════════════════════════════════════════════════
+-- CRIA JANELA PRINCIPAL
+-- ═══════════════════════════════════════════════════
+if PG:FindFirstChild("77Panel") then
+    PG:FindFirstChild("77Panel"):Destroy()
+end
+
+local gui = novo("ScreenGui", {
+    Name = "77Panel",
+    ResetOnSpawn = false,
+    IgnoreGuiInset = true,
+    Parent = PG,
+})
+
+local janela = novo("Frame", {
+    Size = UDim2.new(0, 600, 0, 400),
+    Position = UDim2.new(0.5, 0, 0.5, 0),
+    AnchorPoint = Vector2.new(0.5, 0.5),
+    BackgroundColor3 = C.BG,
+    BorderSizePixel = 0,
+}, gui)
+borda(janela, 12)
+stroke(janela, C.Neon, 1.5)
+
+novo("ImageLabel", {
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    Image = "rbxassetid://133893692319649",
+    ImageTransparency = 0.25,
+    ScaleType = Enum.ScaleType.Crop,
+    ZIndex = 0,
+}, janela)
+
+novo("TextLabel", {
+    Size = UDim2.new(1, 0, 0, 50),
+    Position = UDim2.new(0, 0, 0, 5),
+    BackgroundTransparency = 1,
+    Text = "77 PANEL",
+    TextColor3 = C.Neon,
+    Font = Enum.Font.GothamBlack,
+    TextSize = 40,
+    ZIndex = 5,
+}, janela)
+
+novo("TextLabel", {
+    Size = UDim2.new(0, 200, 0, 25),
+    Position = UDim2.new(0, 20, 0, 15),
+    BackgroundTransparency = 1,
+    Text = "v1.0.0 | " .. MeuCargo(),
+    TextColor3 = C.Neon,
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    TextXAlignment = Enum.TextXAlignment.Left,
+    ZIndex = 6,
+}, janela)
+
+-- Menu lateral
+local menu = novo("Frame", {
+    Size = UDim2.new(0, 150, 1, -75),
+    Position = UDim2.new(0, 15, 0, 65),
+    BackgroundTransparency = 1,
+    ZIndex = 4,
+}, janela)
+novo("UIListLayout", { Padding = UDim.new(0, 6) }, menu)
+
+-- Área principal
+local area = novo("Frame", {
+    Size = UDim2.new(1, -195, 1, -80),
+    Position = UDim2.new(0, 180, 0, 65),
+    BackgroundColor3 = C.Card,
+    BackgroundTransparency = 0.35,
+    BorderSizePixel = 0,
+    ZIndex = 3,
+}, janela)
+borda(area, 12)
+stroke(area, C.Neon, 1.5)-- ═══════════════════════════════════════════════════
+-- ABA HOME
+-- ═══════════════════════════════════════════════════
+local function AbaHome()
+    for _, c in pairs(area:GetChildren()) do c:Destroy() end
+
+    local avF = novo("Frame", {
+        Size = UDim2.new(0, 120, 0, 120),
+        Position = UDim2.new(0, 15, 0, 15),
+        BackgroundColor3 = C.Card,
+        BorderSizePixel = 0,
+        ZIndex = 5,
+    }, area)
+    borda(avF, 10)
+    stroke(avF, C.Neon, 2)
+
+    local av = novo("ImageLabel", {
+        Size = UDim2.new(1, -8, 1, -8),
+        Position = UDim2.new(0, 4, 0, 4),
+        BackgroundTransparency = 1,
+        ZIndex = 6,
+    }, avF)
+    borda(av, 8)
+    pcall(function()
+        av.Image = Players:GetUserThumbnailAsync(LP.UserId,
+            Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size420x420)
+    end)
+
+    novo("TextLabel", {
+        Size = UDim2.new(1, -150, 0, 30),
+        Position = UDim2.new(0, 150, 0, 15),
+        BackgroundTransparency = 1,
+        Text = "Olá, " .. LP.Name,
+        TextColor3 = C.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 20,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 5,
+    }, area)
+
+    novo("TextLabel", {
+        Size = UDim2.new(1, -150, 0, 30),
+        Position = UDim2.new(0, 150, 0, 50),
+        BackgroundTransparency = 1,
+        Text = "Cargo: " .. MeuCargo(),
+        TextColor3 = C.Neon,
+        Font = Enum.Font.GothamBold,
+        TextSize = 16,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 5,
+    }, area)
+
+    novo("TextLabel", {
+        Size = UDim2.new(1, -150, 0, 50),
+        Position = UDim2.new(0, 150, 0, 80),
+        BackgroundTransparency = 1,
+        Text = "Pressione [J] para abrir/fechar",
+        TextColor3 = C.Cinza,
+        Font = Enum.Font.Gotham,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        TextWrapped = true,
+        ZIndex = 5,
+    }, area)
+
+    -- Info
+    local info = {
+        {"Ping:", "..."},
+        {"Users:", tostring(#Players:GetPlayers())},
+        {"Cargos dados:", tostring(#ListarCargos())},
+    }
+    for i, d in ipairs(info) do
+        local y = 155 + (i-1) * 30
+        novo("TextLabel", {
+            Size = UDim2.new(0.4, 0, 0, 26),
+            Position = UDim2.new(0, 15, 0, y),
+            BackgroundTransparency = 1,
+            Text = d[1],
+            TextColor3 = C.Branco,
+            Font = Enum.Font.Gotham,
+            TextSize = 16,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 5,
+        }, area)
+        local v = novo("TextLabel", {
+            Size = UDim2.new(0.6, -15, 0, 26),
+            Position = UDim2.new(0.4, 0, 0, y),
+            BackgroundTransparency = 1,
+            Text = d[2],
+            TextColor3 = C.Neon,
+            Font = Enum.Font.GothamBold,
+            TextSize = 16,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 5,
+        }, area)
+        if i == 1 then
+            task.spawn(function()
+                while v.Parent do
+                    task.wait(1)
+                    v.Text = tostring(math.floor(LP:GetNetworkPing() * 1000))
+                end
+            end)
+        end
+    end
+end
+
+-- ═══════════════════════════════════════════════════
+-- ABA CARGOS (só Dono)
+-- ═══════════════════════════════════════════════════
+local function AbaCargos()
+    for _, c in pairs(area:GetChildren()) do c:Destroy() end
+
+    if not SouDono() then
+        novo("TextLabel", {
+            Size = UDim2.new(1, -30, 0, 40),
+            Position = UDim2.new(0, 15, 0, 20),
+            BackgroundTransparency = 1,
+            Text = "⛔ Só o Dono pode gerenciar cargos",
+            TextColor3 = C.Vermelho,
+            Font = Enum.Font.GothamBold,
+            TextSize = 16,
+            ZIndex = 5,
+        }, area)
+        return
+    end
+
+    novo("TextLabel", {
+        Size = UDim2.new(1, -30, 0, 30),
+        Position = UDim2.new(0, 15, 0, 10),
+        BackgroundTransparency = 1,
+        Text = "👑 Gerenciar Cargos",
+        TextColor3 = C.Neon,
+        Font = Enum.Font.GothamBlack,
+        TextSize = 22,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 5,
+    }, area)
+
+    -- Input: nome
+6    local nomeInput = novo("TextBox", {
+       )
+ Size = UDim2.new(0.45,    0, 0, 34),
+        stroke Position = UDim2(b.new(0, 15, ot0, 50),
+        BackgroundColor3 = C.Card,
+        PlaceholderText = "Nome do jogador",
+        Text = "",
+        TextColor3 = C.Branco,
+        PlaceholderColor3 = C.Cinza,
+        Font = Enum.Font.Gotham,
+        TextSize = 13,
+        ZIndex = 5,
+    }, area)
+    borda(nomeInput, 6)
+    stroke(nomeInput, C.Neon, 1)
+
+    -- Dropdown simples de cargo
+    local cargoSel = "VIP"
+    local botaoCargo = novo("TextButton", {
+        Size = UDim2.new(0.3, 0, 0, 34),
+        Position = UDim2.new(0.47, 0, 0, 50),
+        BackgroundColor3 = C.Card,
+        Text = "Cargo: VIP",
+        TextColor3 = C.Neon,
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        ZIndex = 5,
+    }, area)
+    borda(botaoCargo, aoCargo, C.Neon, 1)
+
+    local ordem = {"VIP", "Admin", "Dono"}
+    local idx = 1
+    botaoCargo.MouseButton1Click:Connect(function()
+        idx = idx + 1
+        if idx > #ordem then idx = 1 end
+        cargoSel = ordem[idx]
+        botaoCargo.Text = "Cargo: " .. cargoSel
+    end)
+
+    -- Botão dar
+    local bDar = novo("TextButton", {
+        Size = UDim2.new(0.47, 0, 0, 34),
+        Position = UDim2.new(0, 15, 0, 95),
+        BackgroundColor3 = C.Verde,
+        Text = "✅ DAR CARGO",
+        TextColor3 = Color3.fromRGB(0, 0, 0),
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        ZIndex = 5,
+    }, area)
+    borda(bDar, 6)
+
+    -- Botão remover
+    local bRem = novo("TextButton", {
+        Size = UDim2.new(0.47, 0, 0, 34),
+        Position = UDim2.new(0.53, -15, 0, 95),
+        BackgroundColor3 = C.Vermelho,
+        Text = "❌ REMOVER",
+        TextColor3 = C.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        ZIndex = 5,
+    }, area)
+    borda(bRem, 6)
+
+    -- Lista
+    local scroll = novo("ScrollingFrame", {
+        Size = UDim2.new(1, -30, 1, -155),
+        Position = UDim2.new(0, 15, 0, 140),
+        BackgroundColor3 = C.Card,
+        BackgroundTransparency = 0.5,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 5,
+    }, area)
+    borda(scroll, 6)
+    novo("UIListLayout", { Padding = UDim.new(0, 4) }, scroll)
+
+    local function atualizar()
+        for _, c in pairs(scroll:GetChildren()) do
+            if c:IsA("TextLabel") then c:Destroy() end
+        end
+        local lista = ListarCargos()
+        if #lista == 0 then
+            novo("TextLabel", {
+                Size = UDim2.new(1, 0, 0, 26),
+                BackgroundTransparency = 1,
+                Text = "Nenhum cargo dado ainda",
+                TextColor3 = C.Cinza,
+                Font = Enum.Font.Gotham,
+                TextSize = 13,
+                ZIndex = 6,
+            }, scroll)
+        else
+            for _, txt in ipairs(lista) do
+                novo("TextLabel", {
+                    Size = UDim2.new(1, 0, 0, 26),
+                    BackgroundTransparency = 1,
+                    Text = "  " .. txt,
+                    TextColor3 = C.Branco,
+                    Font = Enum.Font.Gotham,
+                    TextSize = 13,
+                    TextXAlignment = Enum.TextXAlignment.Left,
+                    ZIndex = 6,
+                }, scroll)
+            end
+        end
+    end
+    atualizar()
+
+    -- Ações
+    bDar.MouseButton1Click:Connect(function()
+        local nome = nomeInput.Text
+        if nome == "" then return end
+        local ok, msg = DarCargo(nome, cargoSel)
+        print("[77] " .. tostring(msg))
+        atualizar()
+    end)
+
+    bRem.MouseButton1Click:Connect(function()
+        local nome = nomeInput.Text
+        if nome == "" then return end
+        local ok, msg = RemoverCargo(nome)
+        print("[77] " .. tostring(msg))
+        atualizar()
+    end)
+end
+
+-- ═══════════════════════════════════════════════════
+-- ABA TARGET (teleporte / espectar)
+-- ═══════════════════════════════════════════════════
+local function AbaTarget()
+    for _, c in pairs(area:GetChildren()) do c:Destroy() end
+
+    local campo = novo("TextBox", {
+        Size = UDim2.new(1, -30, 0, 36),
+        Position = UDim2.new(0, 15, 0, 15),
+        BackgroundColor3 = C.Card,
+        PlaceholderText = "Pesquisar @username...",
+        Text = "",
+        TextColor3 = C.Branco,
+        PlaceholderColor3 = C.Cinza,
+        Font = Enum.Font.Gotham,
+        TextSize = 14,
+        ZIndex = 5,
+    }, area)
+    borda(campo, 8)
+
+    local btp = novo("TextButton", {
+        Size = UDim2.new(0.47, 0, 0, 36),
+        Position = UDim2.new(0, 15, 0, 60),
+        BackgroundColor3 = C.Roxo,
+        Text = "TELEPORT",
+        TextColor3 = C.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        ZIndex = 5,
+    }, area)
+    borda(btp, 8)
+
+    local bexp = novo("TextButton", {
+        Size = UDim2.new(0.47, 0, 0, 36),
+        Position = UDim2.new(0.53, -15, 0, 60),
+        BackgroundColor3 = C.Roxo,
+        Text = "ESPECTAR",
+        TextColor3 = C.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        ZIndex = 5,
+    }, area)
+    borda(bexp, 8)
+
+    local scroll = novo("ScrollingFrame", {
+        Size = UDim2.new(1, -30, 1, -120),
+        Position = UDim2.new(0, 15, 0, 105),
+        BackgroundColor3 = C.Card,
+        BackgroundTransparency = 0.4,
+        BorderSizePixel = 0,
+        ScrollBarThickness = 3,
+        AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        CanvasSize = UDim2.new(0, 0, 0, 0),
+        ZIndex = 5,
+    }, area)
+    borda(scroll, 8)
+    novo("UIListLayout", { Padding = UDim.new(0, 4) }, scroll)
+
+    local alvo = nil
+
+    local function atualizar(f)
+        f = f or ""
+        for _, c in pairs(scroll:GetChildren()) do
+            if c:IsA("TextButton") then c:Destroy() end
+        end
+        for _, p in pairs(Players:GetPlayers()) do
+            if p ~= LP then
+                local m = (f == "")
+                if not m and #f >= 3 then
+                    m = string.find(string.lower(p.Name), string.lower(f)) ~= nil
+                elseif not m then
+                    m = string.sub(string.lower(p.Name), 1, #f) == string.lower(f)
+                end
+                if m then
+                    local b = novo("TextButton", {
+                        Size = UDim2.new(1, 0, 0, 32),
+                        BackgroundColor3 = C.Card,
+                        Text = "  " .. p.Name .. "  [" .. (Cargos[p.Name] or "User") .. "]",
+                        TextColor3 = C.Branco,
+                        Font = Enum.Font.Gotham,
+                        TextSize = 12,
+                        TextXAlignment = Enum.TextXAlignment.Left,
+                        ZIndex = 6,
+                    }, scroll)
+                    borda(b, 6)
+                    b.MouseButton1Click:Connect(function()
+                        alvo = p
+                        campo.Text = p.Name
+                    end)
+                end
+            end
+        end
+    end
+    atualizar()
+    campo:GetPropertyChangedSignal("Text"):Connect(function() atualizar(campo.Text) end)
+
+    btp.MouseButton1Click:Connect(function()
+        local a = alvo or (campo.Text ~= "" and Players:FindFirstChild(campo.Text))
+        if not a or not a.Character then return end
+        local ra = a.Character:FindFirstChild("HumanoidRootPart")
+        local rl = LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
+        if ra and rl then rl.CFrame = ra.CFrame + Vector3.new(0, 3, 0) end
+    end)
+
+    bexp.MouseButton1Click:Connect(function()
+        local a = alvo or (campo.Text ~= "" and Players:FindFirstChild(campo.Text))
+        if not a or not a.Character then return end
+        local cam = workspace.CurrentCamera
+        local h = a.Character:FindFirstChild("Humanoid")
+        if h then
+            cam.CameraSubject = h
+            cam.CameraType = Enum.CameraType.Follow
+        end
+    end)
+end
+
+-- ═══════════════════════════════════════════════════
+-- ABA MISC (ESP)
+-- ═══════════════════════════════════════════════════
+local espLigado = false
+local function AbaMisc()
+    for _, c in pairs(area:GetChildren()) do c:Destroy() end
+
+    local b = novo("TextButton", {
+        Size = UDim2.new(0.6, 0, 0, 45),
+        Position = UDim2.new(0.2, 0, 0, 40),
+        BackgroundColor3 = espLigado and C.Lilas or C.Roxo,
+        Text = espLigado and "ESP: ON" or "ESP: OFF",
+        TextColor3 = C.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 14,
+        ZIndex = 5,
+    }, area)
+    borda(b, 8)
+
+    b.MouseButton1Click:Connect(function()
+        espLigado = not espLigado
+        b.Text = espLigado and "ESP: ON" or "ESP: OFF"
+        b.BackgroundColor3 = espLigado and C.Lilas or C.Roxo
+
+        if espLigado then
+            for _, p in pairs(Players:GetPlayers()) do
+                if p ~= LP and p.Character then
+                    local r = p.Character:FindFirstChild("HumanoidRootPart")
+                    if r and not r:FindFirstChild("77Box") then
+                        local sb = Instance.new("SelectionBox")
+                        sb.Name = "77Box"
+                        sb.Adornee = r
+                        sb.LineThickness = 0.05
+                        sb.Color3 = Color3.fromRGB(75, 0, 130)
+                        sb.SurfaceTransparency = 1
+                        sb.Transparency = 1
+                        sb.Parent = r
+                    end
+                end
+            end
+        else
+            for _, p in pairs(Players:GetPlayers()) do
+                if p.Character then
+                    local r = p.Character:FindFirstChild("HumanoidRootPart")
+                    if r then
+                        local a = r:FindFirstChild("77Box"); if a then a:Destroy() end
+                    end
+                end
+            end
+        end
+    end)
+end
+
+-- ═══════════════════════════════════════════════════
+-- MONTA O MENU
+-- ═══════════════════════════════════════════════════
+local abas = {
+    {nome = "🏠 Home", acao = AbaHome},
+    {nome = "👑 Cargos", acao = AbaCargos},
+    {nome = "🎯 Target", acao = AbaTarget},
+    {nome = "⚙ Misc", acao = AbaMisc},
+    {nome = "ℹ About", acao = function()
+        for _, c in pairs(area:GetChildren()) do c:Destroy() end
+        novo("TextLabel", {
+            Size = UDim2.new(1, -30, 0, 40),
+            Position = UDim2.new(0, 15, 0, 20),
+            BackgroundTransparency = 1,
+            Text = "77 PANEL",
+            TextColor3 = C.Neon,
+            Font = Enum.Font.GothamBlack,
+            TextSize = 28,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            ZIndex = 5,
+        }, area)
+        novo("TextLabel", {
+            Size = UDim2.new(1, -30, 0, 100),
+            Position = UDim2.new(0, 15, 0, 70),
+            BackgroundTransparency = 1,
+            Text = "Dono: " .. DONO .. "\nVersão: 1.0.0\nCargos salvos: " .. tostring(#ListarCargos()),
+            TextColor3 = C.Lilas,
+            Font = Enum.Font.Gotham,
+            TextSize = 14,
+            TextXAlignment = Enum.TextXAlignment.Left,
+            TextYAlignment = Enum.TextYAlignment.Top,
+            ZIndex = 5,
+        }, area)
+    end},
+}
+
+local botoes = {}
+for _, aba in ipairs(abas) do
+    local b = novo("TextButton", {
+        Size = UDim2.new(1, 0, 0, 40),
+        BackgroundColor3 = Color3.fromRGB(20, 5, 40),
+        Text = "  " .. aba.nome,
+        TextColor3 = C.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 5,
+    }, menu)
+    borda(b, 8)
+    local s = stroke(b, C.Neon, 1.5)
+    s.Transparency = 1
+
+    b.MouseButton1Click:Connect(function()
+        for _, ob in pairs(botoes) do
+            ob.BackgroundColor3 = Color3.fromRGB(20, 5, 40)
+            ob.TextColor3 = C.Branco
+            local st = ob:FindFirstChildOfClass("UIStroke")
+            if st then st.Transparency = 1 end
+        end
+        b.BackgroundColor3 = Color3.fromRGB(40, 10, 70)
+        b.TextColor3 = C.Neon
+        s.Transparency = 0
+        aba.acao()
+    end)
+    table.insert(botoes, b)
+end
+
+-- Ativa Home inicial
+botoes[1].BackgroundColor3 = Color3.fromRGB(40, 10, 70)
+botoes[1].TextColor3 = C.Neon
+local s0 = botoes[1]:FindFirstChildOfClass("UIStroke")
+if s0 then s0.Transparency = 0 end
+AbaHome()
+
+-- ═══════════════════════════════════════════════════
+-- BOTÃO FLUTUANTE 77 + TECLA J
+-- ═══════════════════════════════════════════════════
+local bf = novo("TextButton", {
+    Size = UDim2.new(0, 50, 0, 50),
+    Position = UDim2.new(0, 20, 0.5, -25),
+    BackgroundColor3 = C.Roxo,
+    Text = "77",
+    TextColor3 = C.Branco,
+    Font = Enum.Font.GothamBold,
+    TextSize = 14,
+    ZIndex = 10,
+}, gui)
+borda(bf, 25)
+stroke(bf, C.Neon, 1.5)
+
+local aberto = true
+local function alternar()
+    aberto = not aberto
+    janela.Visible = aberto
+end
+
+bf.MouseButton1Click:Connect(alternar)
+
+UIS.InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.J then alternar() end
+end)
+
+print("[77 Panel] Carregado! Você é: " .. MeuCargo())
+print("[77 Panel] Pressione [J] ou toque no 77.")
