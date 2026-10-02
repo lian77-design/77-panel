@@ -4345,34 +4345,40 @@ local script = G2L["3"];
 	
 	-- ============================================================
 	-- [[ 18. BUSCA DE PLAYER ]]
+	-- Avatar do jogador quando encontrado; logo 77 quando vazio/não encontrado.
 	-- ============================================================
-	if imagemAvatar then imagemAvatar.Image=IMAGEM_PADRAO end
-	if textoDisplay  then textoDisplay.Text="DISPLAY NAME" end
-	if textoID       then textoID.Text="ID" end
+	local TARGET_IMAGEM_PADRAO = "rbxassetid://79377968018480"
+	if imagemAvatar then imagemAvatar.Image = TARGET_IMAGEM_PADRAO end
+	if textoDisplay  then textoDisplay.Text = "DISPLAY NAME" end
+	if textoID       then textoID.Text = "ID" end
 	
 	if inputNome then
 		inputNome:GetPropertyChangedSignal("Text"):Connect(function()
-			local d=inputNome.Text:lower()
-			if d=="" then
-				if imagemAvatar then imagemAvatar.Image=IMAGEM_PADRAO end
-				if textoDisplay  then textoDisplay.Text="DISPLAY NAME" end
-				if textoID       then textoID.Text="ID" end
+			local d = inputNome.Text:lower():match("^%s*(.-)%s*$") or ""
+			if d == "" then
+				if imagemAvatar then imagemAvatar.Image = TARGET_IMAGEM_PADRAO end
+				if textoDisplay then textoDisplay.Text = "DISPLAY NAME" end
+				if textoID then textoID.Text = "ID" end
 				return
 			end
-			for _, p in pairs(Players:GetPlayers()) do
-				if p.Name:lower():find(d,1,true) or p.DisplayName:lower():find(d,1,true) then
-					if textoDisplay then textoDisplay.Text=p.DisplayName end
-					if textoID      then textoID.Text="ID: "..p.UserId end
-					local ok,img=pcall(function()
-						return Players:GetUserThumbnailAsync(p.UserId,Enum.ThumbnailType.HeadShot,Enum.ThumbnailSize.Size150x150)
+			for _, p in ipairs(Players:GetPlayers()) do
+				if p.Name:lower():find(d, 1, true) or p.DisplayName:lower():find(d, 1, true) then
+					if textoDisplay then textoDisplay.Text = p.DisplayName end
+					if textoID then textoID.Text = "ID: " .. p.UserId end
+					-- A miniatura real do avatar do jogador pesquisado.
+					local ok, img = pcall(function()
+						return Players:GetUserThumbnailAsync(p.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size150x150)
 					end)
-					if imagemAvatar then imagemAvatar.Image=ok and img or IMAGEM_PADRAO end
+					if imagemAvatar then
+						imagemAvatar.Image = (ok and img and img ~= "") and img or TARGET_IMAGEM_PADRAO
+					end
 					return
 				end
 			end
-			if imagemAvatar then imagemAvatar.Image=IMAGEM_PADRAO end
-			if textoDisplay  then textoDisplay.Text="NÃO ENCONTRADO" end
-			if textoID       then textoID.Text="ID: ????" end
+			-- Nenhum jogador corresponde à pesquisa: volta para o 77.
+			if imagemAvatar then imagemAvatar.Image = TARGET_IMAGEM_PADRAO end
+			if textoDisplay then textoDisplay.Text = "NÃO ENCONTRADO" end
+			if textoID then textoID.Text = "ID: ????" end
 		end)
 	end
 	
