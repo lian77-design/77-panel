@@ -3072,18 +3072,20 @@ G2L["113"]["Text"] = [[+]];
 G2L["113"]["Position"] = UDim2.new(0, 142, 0, 0);
 
 
--- -- StarterGui.ScreenGui.MainPanel.BackgroundImage
+-- StarterGui.ScreenGui.MainPanel.BackgroundImage
+-- Fundo ocupa todo o MainPanel. Troque o ID abaixo pelo ID da imagem
+-- depois de enviar o wallpaper roxo para o Roblox (Creator Dashboard).
 G2L["114"] = Instance.new("ImageLabel", G2L["2"]);
-G2L["114"]["BorderSizePixel"] = 0;
-G2L["114"]["ScaleType"] = Enum.ScaleType.Tile;
-G2L["114"]["TileSize"] = UDim2.new(0, 128, 0, 128);
-G2L["114"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["114"]["ImageColor3"] = Color3.fromRGB(195, 195, 195);
-G2L["114"]["Image"] = [[rbxassetid://71806348669195]];
-G2L["114"]["Size"] = UDim2.new(1, 0, 1, 0);
-G2L["114"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
-G2L["114"]["BackgroundTransparency"] = 1;
 G2L["114"]["Name"] = [[BackgroundImage]];
+G2L["114"]["BorderSizePixel"] = 0;
+G2L["114"]["BackgroundTransparency"] = 1;
+G2L["114"]["Image"] = [[rbxassetid://71806348669195]];
+G2L["114"]["ImageColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["114"]["ImageTransparency"] = 0;
+G2L["114"]["ScaleType"] = Enum.ScaleType.Stretch;
+G2L["114"]["Position"] = UDim2.new(0, 0, 0, 0);
+G2L["114"]["Size"] = UDim2.new(1, 0, 1, 0);
+G2L["114"]["ZIndex"] = 0;
 
 
 -- StarterGui.ScreenGui.clicker
@@ -9132,6 +9134,22 @@ do
     rootGui.DescendantAdded:Connect(apply77Theme)
     for _, obj in ipairs(rootGui:GetDescendants()) do
         apply77Theme(obj)
+    end
+
+    -- Faz o wallpaper aparecer atrás dos elementos do painel.
+    local mainPanel = G2L["2"]
+    local backgroundImage = G2L["114"]
+    mainPanel.BackgroundTransparency = 1
+    backgroundImage.ZIndex = 0
+    backgroundImage.ScaleType = Enum.ScaleType.Stretch
+    backgroundImage.ImageColor3 = Color3.fromRGB(255, 255, 255)
+    backgroundImage.ImageTransparency = 0
+
+    -- Deixa os painéis internos translúcidos, mantendo botões e textos legíveis.
+    for _, obj in ipairs(mainPanel:GetDescendants()) do
+        if obj ~= backgroundImage and (obj:IsA("Frame") or obj:IsA("ScrollingFrame")) then
+            obj.BackgroundTransparency = math.max(obj.BackgroundTransparency, 0.25)
+        end
     end
 
     G2L["2"].BackgroundColor3 = PURPLE_DARK
