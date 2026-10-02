@@ -2488,7 +2488,7 @@ G2L["df"]["BackgroundTransparency"] = 1;
 G2L["e0"] = Instance.new("ImageLabel", G2L["df"]);
 G2L["e0"]["BorderSizePixel"] = 0;
 G2L["e0"]["BackgroundColor3"] = Color3.fromRGB(130, 130, 130);
-G2L["e0"]["Image"] = [[rbxasset://textures/ui/GuiImagePlaceholder.png]];
+G2L["e0"]["Image"] = [[rbxassetid://79377968018480]];
 G2L["e0"]["Size"] = UDim2.new(0, 100, 0, 100);
 G2L["e0"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["e0"]["Name"] = [[AVATA]];
@@ -3093,7 +3093,7 @@ G2L["115"] = Instance.new("ImageButton", G2L["1"]);
 G2L["115"]["BorderSizePixel"] = 0;
 G2L["115"]["AutoButtonColor"] = false;
 G2L["115"]["BackgroundColor3"] = Color3.fromRGB(255, 255, 255);
-G2L["115"]["Image"] = [[rbxassetid://85392141697801]];
+G2L["115"]["Image"] = [[rbxassetid://79377968018480]];
 G2L["115"]["Size"] = UDim2.new(0, 30, 0, 30);
 G2L["115"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
 G2L["115"]["Name"] = [[clicker]];
@@ -7949,7 +7949,7 @@ local script = G2L["dd"];
 	local labelDisplay= textBox:WaitForChild("DISPLAY NAME")
 	local imageLabel  = scroll:WaitForChild("AVATA")
 	
-	local IMAGEM_PADRAO = "rbxassetid://85392141697801"
+	local IMAGEM_PADRAO = "rbxassetid://79377968018480"
 	
 	local function resetarInterface()
 		labelID.Text      = "ID: 000000"
