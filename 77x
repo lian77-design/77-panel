@@ -1,0 +1,1162 @@
+-- =====================================================
+-- 77 PANEL - MOBILE
+-- Tema: Roxo / Preto / Lilas
+-- Tecla J: Abrir/Fechar
+-- ESP + Target + Anti-AFK + Espectador + AirWalk
+-- =====================================================
+
+local Players = game:GetService("Players")
+local RunService = game:GetService("RunService")
+local UserInputService = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+local Cores = {
+    Fundo = Color3.fromRGB(22, 10, 43),
+    Secundario = Color3.fromRGB(30, 15, 55),
+    Roxo = Color3.fromRGB(91, 33, 182),
+    Lilas = Color3.fromRGB(168, 85, 247),
+    Branco = Color3.fromRGB(240, 240, 240),
+    Cinza = Color3.fromRGB(180, 180, 180),
+    Verde = Color3.fromRGB(0, 255, 100),
+    Vermelho = Color3.fromRGB(255, 60, 60)
+}
+
+local AntiAFKAtivo = false
+local PainelAberto = false
+local AlvoSelecionado = nil
+local Espectando = false
+local JogadorEspectado = nil
+local AtualizarLista
+local EncerrarEspectador
+
+local function Criar(classe, props, pai)
+    local obj = Instance.new(classe)
+    for k, v in pairs(props) do
+        obj[k] = v
+    end
+    obj.Parent = pai
+    return obj
+end
+
+local function Arredondar(obj, raio)
+    local c = Instance.new("UICorner")
+    c.CornerRadius = UDim.new(0, raio)
+    c.Parent = obj
+end
+
+-- LIMPAR VERSAO ANTERIOR
+for _, nome in ipairs({"77Panel", "AirwalkMobileControls", "NotifESP", "77ESP"}) do
+    local antigo = PlayerGui:FindFirstChild(nome)
+    if antigo then antigo:Destroy() end
+end
+
+-- INTERFACE
+local Gui = Criar("ScreenGui", {
+    Name = "77Panel",
+    ResetOnSpawn = false,
+    IgnoreGuiInset = true,
+    DisplayOrder = 999
+}, PlayerGui)
+
+local Janela = Criar("Frame", {
+    Name = "JanelaPrincipal",
+    Size = UDim2.new(0, 520, 0, 380),
+    Position = UDim2.new(0.5, -260, 0.5, -190),
+    BackgroundColor3 = Cores.Fundo,
+    BorderSizePixel = 0,
+    Visible = false
+}, Gui)
+Arredondar(Janela, 12)
+
+local Barra = Criar("Frame", {
+    Size = UDim2.new(1, 0, 0, 42),
+    BackgroundColor3 = Cores.Secundario,
+    BorderSizePixel = 0
+}, Janela)
+Arredondar(Barra, 12)
+
+Criar("TextLabel", {
+    Size = UDim2.new(1, 0, 1, 0),
+    BackgroundTransparency = 1,
+    Text = "77 PANEL",
+    TextColor3 = Cores.Branco,
+    Font = Enum.Font.GothamBold,
+    TextSize = 18
+}, Barra)
+
+local Menu = Criar("Frame", {
+    Position = UDim2.new(0, 0, 0, 42),
+    Size = UDim2.new(0, 115, 1, -42),
+    BackgroundColor3 = Cores.Secundario,
+    BorderSizePixel = 0
+}, Janela)
+
+local Area = Criar("Frame", {
+    Position = UDim2.new(0, 115, 0, 42),
+    Size = UDim2.new(1, -115, 1, -42),
+    BackgroundColor3 = Cores.Fundo,
+    BorderSizePixel = 0
+}, Janela)
+
+Criar("UIListLayout", {
+    Padding = UDim.new(0, 6),
+    SortOrder = Enum.SortOrder.LayoutOrder
+}, Menu)
+
+Criar("UIPadding", {
+    PaddingTop = UDim.new(0, 8),
+    PaddingLeft = UDim.new(0, 7),
+    PaddingRight = UDim.new(0, 7)
+}, Menu)
+
+local Abas = {"Home", "Target", "Misc", "About"}
+local BotoesMenu = {}
+
+local function Botao(pai, texto, pos, tamanho)
+    local b = Criar("TextButton", {
+        Size = tamanho,
+        Position = pos,
+        BackgroundColor3 = Cores.Roxo,
+        Text = texto,
+        TextColor3 = Cores.Branco,
+        Font = Enum.Font.GothamBold,
+        TextSize = 12,
+        BorderSizePixel = 0,
+        AutoButtonColor = true
+    }, pai)
+    Arredondar(b, 8)
+    return b
+end
+
+-- =====================================================
+-- NOTIFICAÇÕES
+-- =====================================================
+
+local NotifGui = Criar("ScreenGui", {
+    Name = "NotifESP",
+    ResetOnSpawn = false
+}, PlayerGui)
+
+local function notificar(titulo, texto, cor)
+    cor = cor or Cores.Lilas
+
+    local frame = Criar("Frame", {
+        Size = UDim2.new(0, 270, 0, 64),
+        Position = UDim2.new(1, 10, 1, -100),
+        AnchorPoint = Vector2.new(1, 1),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+        BackgroundTransparency = 0.08,
+        BorderSizePixel = 0,
+        ZIndex = 10
+    }, NotifGui)
+    Arredondar(frame, 8)
+
+    local borda = Criar("Frame", {
+        Size = UDim2.new(0, 4, 1, 0),
+        Position = UDim2.new(1, -4, 0, 0),
+        BackgroundColor3 = cor,
+        BorderSizePixel = 0,
+        ZIndex = 11
+    }, frame)
+    Arredondar(borda, 8)
+
+    Criar("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 26),
+        Position = UDim2.new(0, 12, 0, 8),
+        BackgroundTransparency = 1,
+        Text = titulo,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        Font = Enum.Font.GothamBold,
+        TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 11
+    }, frame)
+
+    Criar("TextLabel", {
+        Size = UDim2.new(1, -20, 0, 18),
+        Position = UDim2.new(0, 12, 0, 34),
+        BackgroundTransparency = 1,
+        Text = texto,
+        TextColor3 = Color3.fromRGB(200, 200, 200),
+        Font = Enum.Font.Gotham,
+        TextSize = 11,
+        TextXAlignment = Enum.TextXAlignment.Left,
+        ZIndex = 11
+    }, frame)
+
+    TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+        Position = UDim2.new(1, -16, 1, -100)
+    }):Play()
+
+    task.delay(3.5, function()
+        TweenService:Create(frame, TweenInfo.new(0.3), {
+            Position = UDim2.new(1, 10, 1, -100)
+        }):Play()
+        task.wait(0.35)
+        if frame and frame.Parent then frame:Destroy() end
+    end)
+end
+
+-- =====================================================
+-- ESP (2 BillboardGui: um pro box, um pro nome)
+-- =====================================================
+
+local espAtivo = false
+local DISTANCIA_MAX = 500
+
+local espGui = Criar("ScreenGui", {
+    Name = "77ESP",
+    ResetOnSpawn = false,
+    IgnoreGuiInset = true,
+    DisplayOrder = 5
+}, PlayerGui)
+
+local espDados = {}
+
+local COR_CAIXA = Color3.fromRGB(168, 85, 247)
+local COR_TEXTO = Color3.fromRGB(200, 160, 255)
+local TAMANHO_BORDA = 2
+
+local Camera = workspace.CurrentCamera
+
+local PARTES_NOME = {
+    "Head", "UpperTorso", "LowerTorso", "HumanoidRootPart",
+    "LeftUpperArm", "RightUpperArm", "LeftUpperLeg", "RightUpperLeg",
+}
+
+local function criarESP(p)
+    if espDados[p.UserId] then return end
+    local char = p.Character
+    if not char then return end
+
+    local head = char:FindFirstChild("Head")
+    if not head then return end
+
+    -- ===== BILLBOARD 1: BOX =====
+    local bbBox = Criar("BillboardGui", {
+        Name = "77Box",
+        Adornee = char,
+        Size = UDim2.new(0, 100, 0, 100),
+        AlwaysOnTop = true,
+        LightInfluence = 0,
+        MaxDistance = 1000,
+        ClipsDescendants = false
+    }, espGui)
+
+    local boxFrame = Criar("Frame", {
+        Name = "Box",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        BorderSizePixel = 0
+    }, bbBox)
+
+    local stroke = Criar("UIStroke", {
+        Color = COR_CAIXA,
+        Thickness = TAMANHO_BORDA,
+        ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    }, boxFrame)
+
+    -- ===== BILLBOARD 2: NOME (independente) =====
+    local bbNome = Criar("BillboardGui", {
+        Name = "77Nome",
+        Adornee = head,
+        Size = UDim2.new(0, 200, 0, 22),
+        StudsOffsetWorldSpace = Vector3.new(0, 2.5, 0),
+        AlwaysOnTop = true,
+        LightInfluence = 0,
+        MaxDistance = 1000,
+        ClipsDescendants = false
+    }, espGui)
+
+    local label = Criar("TextLabel", {
+        Name = "Nome",
+        Size = UDim2.new(1, 0, 1, 0),
+        BackgroundTransparency = 1,
+        Text = "",
+        TextColor3 = COR_TEXTO,
+        TextStrokeTransparency = 0.2,
+        TextStrokeColor3 = Color3.new(0, 0, 0),
+        Font = Enum.Font.GothamBold,
+        TextSize = 14
+    }, bbNome)
+
+    espDados[p.UserId] = {
+        bbBox = bbBox,
+        boxFrame = boxFrame,
+        bbNome = bbNome,
+        label = label
+    }
+end
+
+local function removerESP(p)
+    local d = espDados[p.UserId]
+    if not d then return end
+    if d.bbBox and d.bbBox.Parent then d.bbBox:Destroy() end
+    if d.bbNome and d.bbNome.Parent then d.bbNome:Destroy() end
+    espDados[p.UserId] = nil
+end
+
+local function esconderESP(p)
+    local d = espDados[p.UserId]
+    if not d then return end
+    d.bbBox.Enabled = false
+    d.bbNome.Enabled = false
+end
+
+local function limparTodosESP()
+    for _, p in pairs(Players:GetPlayers()) do
+        if p ~= LocalPlayer then esconderESP(p) end
+    end
+end
+
+local function calcularBox2D(char)
+    local minX, minY =  math.huge,  math.huge
+    local maxX, maxY = -math.huge, -math.huge
+    local algumVisible = false
+
+    for _, nome in ipairs(PARTES_NOME) do
+        local part = char:FindFirstChild(nome)
+        if part and part:IsA("BasePart") then
+            local size = part.Size
+            local cf   = part.CFrame
+            local hx, hy, hz = size.X/2, size.Y/2, size.Z/2
+            local corners = {
+                cf:PointToWorldSpace(Vector3.new( hx,  hy,  hz)),
+                cf:PointToWorldSpace(Vector3.new(-hx,  hy,  hz)),
+                cf:PointToWorldSpace(Vector3.new( hx, -hy,  hz)),
+                cf:PointToWorldSpace(Vector3.new(-hx, -hy,  hz)),
+                cf:PointToWorldSpace(Vector3.new( hx,  hy, -hz)),
+                cf:PointToWorldSpace(Vector3.new(-hx,  hy, -hz)),
+                cf:PointToWorldSpace(Vector3.new( hx, -hy, -hz)),
+                cf:PointToWorldSpace(Vector3.new(-hx, -hy, -hz)),
+            }
+            for _, wp in ipairs(corners) do
+                local sp, onScreen = Camera:WorldToViewportPoint(wp)
+                if onScreen and sp.Z > 0 then
+                    algumVisible = true
+                    if sp.X < minX then minX = sp.X end
+                    if sp.Y < minY then minY = sp.Y end
+                    if sp.X > maxX then maxX = sp.X end
+                    if sp.Y > maxY then maxY = sp.Y end
+                end
+            end
+        end
+    end
+
+    if not algumVisible then return nil end
+    return minX, minY, maxX, maxY
+end
+
+local function atualizarESP(p, localRoot)
+    local d = espDados[p.UserId]
+    if not d then return end
+
+    local char = p.Character
+    if not char then esconderESP(p) return end
+
+    local root     = char:FindFirstChild("HumanoidRootPart")
+    local humanoid = char:FindFirstChildOfClass("Humanoid")
+    if not root or not humanoid or humanoid.Health <= 0 then
+        esconderESP(p) return
+    end
+
+    local dist = 0
+    if localRoot then
+        dist = (root.Position - localRoot.Position).Magnitude
+        if dist > DISTANCIA_MAX then
+            esconderESP(p) return
+        end
+    end
+
+    local _, onScreen = Camera:WorldToViewportPoint(root.Position)
+    if not onScreen then esconderESP(p) return end
+
+    local minX, minY, maxX, maxY = calcularBox2D(char)
+    if not minX then esconderESP(p) return end
+
+    local largura = maxX - minX
+    local altura  = maxY - minY
+    if largura <= 0 or altura <= 0 then esconderESP(p) return end
+
+    d.bbBox.Size = UDim2.new(0, largura + 4, 0, altura + 4)
+    d.bbBox.Enabled = true
+
+    d.label.Text = p.DisplayName .. "  [" .. math.floor(dist) .. "m]"
+    d.bbNome.Enabled = true
+end
+
+local conexaoESP = nil
+
+local function iniciarLoopESP()
+    if conexaoESP then return end
+    conexaoESP = RunService.RenderStepped:Connect(function()
+        if not espAtivo then return end
+
+        Camera = workspace.CurrentCamera
+
+        local localRoot = LocalPlayer.Character
+            and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then
+                if not espDados[p.UserId] then criarESP(p) end
+                atualizarESP(p, localRoot)
+            end
+        end
+    end)
+end
+
+iniciarLoopESP()
+
+-- =====================================================
+-- AIRWALK
+-- =====================================================
+
+local airwalkOn = false
+local airwalkConnection = nil
+local airwalkMobileGui = nil
+local subindoMobile = false
+local descendoMobile = false
+
+local function criarBotoesMobile()
+    if airwalkMobileGui then airwalkMobileGui:Destroy() end
+
+    airwalkMobileGui = Criar("ScreenGui", {
+        Name = "AirwalkMobileControls",
+        ResetOnSpawn = false,
+        DisplayOrder = 100
+    }, PlayerGui)
+
+    local btnUp = Criar("TextButton", {
+        Name = "BtnUp",
+        Size = UDim2.new(0, 60, 0, 60),
+        Position = UDim2.new(0.85, 0, 0.45, 0),
+        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+        BackgroundTransparency = 0.3,
+        Text = "⬆️",
+        TextSize = 26,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0
+    }, airwalkMobileGui)
+    Arredondar(btnUp, 12)
+
+    local btnDown = Criar("TextButton", {
+        Name = "BtnDown",
+        Size = UDim2.new(0, 60, 0, 60),
+        Position = UDim2.new(0.85, 0, 0.60, 0),
+        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+        BackgroundTransparency = 0.3,
+        Text = "⬇️",
+        TextSize = 26,
+        TextColor3 = Color3.fromRGB(255, 255, 255),
+        BorderSizePixel = 0
+    }, airwalkMobileGui)
+    Arredondar(btnDown, 12)
+
+    btnUp.MouseButton1Down:Connect(function() subindoMobile = true end)
+    btnUp.MouseButton1Up:Connect(function() subindoMobile = false end)
+    btnUp.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch
+            or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            subindoMobile = false
+        end
+    end)
+
+    btnDown.MouseButton1Down:Connect(function() descendoMobile = true end)
+    btnDown.MouseButton1Up:Connect(function() descendoMobile = false end)
+    btnDown.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.Touch
+            or input.UserInputType == Enum.UserInputType.MouseButton1 then
+            descendoMobile = false
+        end
+    end)
+end
+
+local function removerBotoesMobile()
+    subindoMobile = false
+    descendoMobile = false
+    if airwalkMobileGui then
+        airwalkMobileGui:Destroy()
+        airwalkMobileGui = nil
+    end
+end
+
+local function desligarAirWalk()
+    airwalkOn = false
+
+    if airwalkConnection then
+        airwalkConnection:Disconnect()
+        airwalkConnection = nil
+    end
+
+    if workspace:FindFirstChild("AirwalkFloor") then
+        workspace.AirwalkFloor:Destroy()
+    end
+
+    removerBotoesMobile()
+end
+
+local function ligarAirWalk()
+    local char = LocalPlayer.Character
+    if not char then return false end
+
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+    local hum = char:FindFirstChildOfClass("Humanoid")
+    if not hrp or not hum then return false end
+
+    airwalkOn = true
+
+    local fakePart = Instance.new("Part", workspace)
+    fakePart.Name = "AirwalkFloor"
+    fakePart.Anchored = true
+    fakePart.CanCollide = true
+    fakePart.Transparency = 1
+    fakePart.Size = Vector3.new(50, 1, 50)
+    fakePart.CFrame = CFrame.new(
+        hrp.Position.X,
+        hrp.Position.Y - (hum.HipHeight + 1.5),
+        hrp.Position.Z
+    )
+
+    local targetY = fakePart.Position.Y
+
+    if UserInputService.TouchEnabled then
+        criarBotoesMobile()
+    end
+
+    airwalkConnection = RunService.Heartbeat:Connect(function()
+        if not airwalkOn then return end
+
+        local c = LocalPlayer.Character
+        if not c then return end
+
+        local r = c:FindFirstChild("HumanoidRootPart")
+        if not r then return end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) or subindoMobile then
+            targetY = targetY + 0.3
+        end
+
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl)
+            or UserInputService:IsKeyDown(Enum.KeyCode.LeftShift)
+            or descendoMobile then
+            targetY = targetY - 0.3
+        end
+
+        local piso = workspace:FindFirstChild("AirwalkFloor")
+        if piso then
+            piso.CFrame = CFrame.new(r.Position.X, targetY, r.Position.Z)
+        end
+    end)
+
+    return true
+end
+
+LocalPlayer.CharacterAdded:Connect(function()
+    if airwalkOn then
+        desligarAirWalk()
+    end
+end)
+
+-- =====================================================
+-- ESPECTADOR
+-- =====================================================
+
+local function RestaurarCamera()
+    local cam = workspace.CurrentCamera
+    local char = LocalPlayer.Character
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+    if cam and humanoid then
+        cam.CameraSubject = humanoid
+    end
+end
+
+EncerrarEspectador = function()
+    Espectando = false
+    JogadorEspectado = nil
+    RestaurarCamera()
+end
+
+local function AtualizarCamera()
+    if not Espectando then return end
+
+    local cam = workspace.CurrentCamera
+    local alvo = JogadorEspectado
+
+    if not cam then return end
+
+    if not alvo or alvo.Parent ~= Players then
+        EncerrarEspectador()
+        return
+    end
+
+    local char = alvo.Character
+    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+    if humanoid and cam.CameraSubject ~= humanoid then
+        cam.CameraSubject = humanoid
+    end
+end
+
+RunService.RenderStepped:Connect(AtualizarCamera)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    if Espectando then
+        AtualizarCamera()
+    else
+        RestaurarCamera()
+    end
+end)
+
+-- =====================================================
+-- TROCAR DE ABA
+-- =====================================================
+
+local function TrocarAba(nome)
+    for _, b in ipairs(BotoesMenu) do
+        b.BackgroundColor3 =
+            b.Name == nome and Cores.Roxo or Cores.Secundario
+    end
+
+    for _, obj in ipairs(Area:GetChildren()) do
+        obj:Destroy()
+    end
+
+    if nome == "Home" then
+        Criar("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 45),
+            Position = UDim2.new(0, 10, 0, 15),
+            BackgroundTransparency = 1,
+            Text = "Olá, " .. LocalPlayer.Name .. "!",
+            TextColor3 = Cores.Branco,
+            Font = Enum.Font.GothamBold,
+            TextSize = 18,
+            TextXAlignment = Enum.TextXAlignment.Left
+        }, Area)
+
+        Criar("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 60),
+            Position = UDim2.new(0, 10, 0, 60),
+            BackgroundTransparency = 1,
+            Text = "77 Panel\nUse o menu lateral para acessar as funções.",
+            TextColor3 = Cores.Lilas,
+            Font = Enum.Font.Gotham,
+            TextSize = 13,
+            TextXAlignment = Enum.TextXAlignment.Left
+        }, Area)
+
+    elseif nome == "Target" then
+        local pesquisa = Criar("TextBox", {
+            Size = UDim2.new(1, -20, 0, 35),
+            Position = UDim2.new(0, 10, 0, 10),
+            BackgroundColor3 = Cores.Secundario,
+            Text = "",
+            PlaceholderText = "Pesquisar jogador...",
+            PlaceholderColor3 = Cores.Cinza,
+            TextColor3 = Cores.Branco,
+            Font = Enum.Font.Gotham,
+            TextSize = 13,
+            ClearTextOnFocus = false,
+            BorderSizePixel = 0
+        }, Area)
+        Arredondar(pesquisa, 7)
+
+        local tp = Botao(
+            Area, "TELEPORTAR",
+            UDim2.new(0, 10, 0, 52),
+            UDim2.new(0.38, -5, 0, 35)
+        )
+
+        local spec = Botao(
+            Area, "ESPECTAR",
+            UDim2.new(0.38, 10, 0, 52),
+            UDim2.new(0.32, -5, 0, 35)
+        )
+
+        local anterior = Botao(
+            Area, "◀",
+            UDim2.new(0.70, 5, 0, 52),
+            UDim2.new(0.14, -5, 0, 35)
+        )
+
+        local proximo = Botao(
+            Area, "▶",
+            UDim2.new(0.84, 5, 0, 52),
+            UDim2.new(0.16, -15, 0, 35)
+        )
+
+        anterior.TextSize = 18
+        proximo.TextSize = 18
+        anterior.BackgroundColor3 = Cores.Lilas
+        proximo.BackgroundColor3 = Cores.Lilas
+
+        local status = Criar("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 22),
+            Position = UDim2.new(0, 10, 0, 91),
+            BackgroundTransparency = 1,
+            Text = "Selecione um jogador",
+            TextColor3 = Cores.Lilas,
+            Font = Enum.Font.Gotham,
+            TextSize = 11,
+            TextTruncate = Enum.TextTruncate.AtEnd
+        }, Area)
+
+        local scroll = Criar("ScrollingFrame", {
+            Size = UDim2.new(1, -20, 1, -125),
+            Position = UDim2.new(0, 10, 0, 116),
+            BackgroundColor3 = Cores.Secundario,
+            BorderSizePixel = 0,
+            ScrollBarThickness = 4,
+            CanvasSize = UDim2.new(0, 0, 0, 0)
+        }, Area)
+        Arredondar(scroll, 7)
+
+        local layout = Criar("UIListLayout", {
+            Padding = UDim.new(0, 4),
+            SortOrder = Enum.SortOrder.Name
+        }, scroll)
+
+        local function ObterJogadores()
+            local lista = {}
+
+            for _, player in ipairs(Players:GetPlayers()) do
+                if player ~= LocalPlayer
+                    and string.find(
+                        string.lower(player.Name),
+                        string.lower(pesquisa.Text),
+                        1,
+                        true
+                    ) then
+                    table.insert(lista, player)
+                end
+            end
+
+            table.sort(lista, function(a, b)
+                return string.lower(a.Name) < string.lower(b.Name)
+            end)
+
+            return lista
+        end
+
+        local function Atualizar()
+            for _, obj in ipairs(scroll:GetChildren()) do
+                if obj:IsA("TextButton") then
+                    obj:Destroy()
+                end
+            end
+
+            local lista = ObterJogadores()
+
+            if AlvoSelecionado and AlvoSelecionado.Parent ~= Players then
+                AlvoSelecionado = nil
+            end
+
+            if Espectando and
+                (not JogadorEspectado or JogadorEspectado.Parent ~= Players) then
+                EncerrarEspectador()
+                spec.Text = "ESPECTAR"
+            end
+
+            for _, player in ipairs(lista) do
+                local jogador = player
+
+                local b = Botao(
+                    scroll,
+                    jogador.Name,
+                    UDim2.new(),
+                    UDim2.new(1, -8, 0, 32)
+                )
+
+                b.Name = jogador.Name
+                b.BackgroundColor3 =
+                    AlvoSelecionado == jogador and Cores.Roxo or Cores.Fundo
+
+                b.MouseButton1Click:Connect(function()
+                    AlvoSelecionado = jogador
+
+                    if Espectando then
+                        JogadorEspectado = jogador
+                        AtualizarCamera()
+                    end
+
+                    Atualizar()
+                end)
+            end
+
+            if Espectando and JogadorEspectado then
+                status.Text = "Espectando: " .. JogadorEspectado.Name
+            elseif AlvoSelecionado then
+                status.Text = "Selecionado: " .. AlvoSelecionado.Name
+            else
+                status.Text = #lista == 0
+                    and "Nenhum jogador disponível"
+                    or "Selecione um jogador"
+            end
+
+            task.defer(function()
+                if layout and layout.Parent then
+                    scroll.CanvasSize = UDim2.new(
+                        0, 0, 0, layout.AbsoluteContentSize.Y + 5
+                    )
+                end
+            end)
+        end
+
+        AtualizarLista = Atualizar
+
+        local function SelecionarJogador(player)
+            if not player or player == LocalPlayer then return end
+
+            AlvoSelecionado = player
+
+            if Espectando then
+                JogadorEspectado = player
+                AtualizarCamera()
+            end
+
+            Atualizar()
+        end
+
+        local function MudarJogador(direcao)
+            local lista = ObterJogadores()
+
+            if #lista == 0 then
+                status.Text = "Nenhum jogador disponível"
+                return
+            end
+
+            local atual = Espectando and JogadorEspectado or AlvoSelecionado
+            local indice = table.find(lista, atual)
+
+            if not indice then
+                indice = direcao == 1 and 0 or 1
+            end
+
+            indice = ((indice - 1 + direcao) % #lista) + 1
+
+            SelecionarJogador(lista[indice])
+        end
+
+        pesquisa:GetPropertyChangedSignal("Text"):Connect(Atualizar)
+
+        anterior.MouseButton1Click:Connect(function()
+            MudarJogador(-1)
+        end)
+
+        proximo.MouseButton1Click:Connect(function()
+            MudarJogador(1)
+        end)
+
+        tp.MouseButton1Click:Connect(function()
+            local alvo = AlvoSelecionado
+            local meuChar = LocalPlayer.Character
+            local alvoChar = alvo and alvo.Character
+
+            local meuRoot = meuChar
+                and meuChar:FindFirstChild("HumanoidRootPart")
+
+            local alvoRoot = alvoChar
+                and alvoChar:FindFirstChild("HumanoidRootPart")
+
+            if meuRoot and alvoRoot then
+                meuRoot.CFrame = alvoRoot.CFrame * CFrame.new(0, 0, 3)
+            else
+                status.Text = "Personagem indisponível"
+            end
+        end)
+
+        spec.MouseButton1Click:Connect(function()
+            if Espectando then
+                EncerrarEspectador()
+                spec.Text = "ESPECTAR"
+                Atualizar()
+                return
+            end
+
+            local alvo = AlvoSelecionado
+            local char = alvo and alvo.Character
+            local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+
+            if not alvo or alvo.Parent ~= Players then
+                status.Text = "Selecione um jogador válido"
+                return
+            end
+
+            if not humanoid then
+                status.Text = "Aguardando personagem do jogador"
+                return
+            end
+
+            Espectando = true
+            JogadorEspectado = alvo
+            workspace.CurrentCamera.CameraSubject = humanoid
+
+            spec.Text = "PARAR"
+            Atualizar()
+        end)
+
+        Atualizar()
+
+    elseif nome == "Misc" then
+        local espBotao = Botao(
+            Area,
+            espAtivo and "ESP: ON" or "ESP: OFF",
+            UDim2.new(0.1, 0, 0, 20),
+            UDim2.new(0.8, 0, 0, 40)
+        )
+
+        espBotao.BackgroundColor3 =
+            espAtivo and Cores.Lilas or Cores.Roxo
+
+        espBotao.MouseButton1Click:Connect(function()
+            espAtivo = not espAtivo
+
+            if espAtivo then
+                for _, p in ipairs(Players:GetPlayers()) do
+                    if p ~= LocalPlayer then criarESP(p) end
+                end
+                espBotao.Text = "ESP: ON"
+                espBotao.BackgroundColor3 = Cores.Lilas
+                notificar("ESP ATIVADO", "Range: " .. DISTANCIA_MAX .. " studs", Cores.Lilas)
+            else
+                limparTodosESP()
+                espBotao.Text = "ESP: OFF"
+                espBotao.BackgroundColor3 = Cores.Roxo
+                notificar("ESP DESATIVADO", "Toque no botão para ativar", Color3.fromRGB(60, 60, 60))
+            end
+        end)
+
+        local afkBotao = Botao(
+            Area,
+            AntiAFKAtivo and "ANTI-AFK: ON" or "ANTI-AFK: OFF",
+            UDim2.new(0.1, 0, 0, 70),
+            UDim2.new(0.8, 0, 0, 40)
+        )
+
+        afkBotao.BackgroundColor3 =
+            AntiAFKAtivo and Cores.Lilas or Cores.Roxo
+
+        afkBotao.MouseButton1Click:Connect(function()
+            AntiAFKAtivo = not AntiAFKAtivo
+            afkBotao.Text = AntiAFKAtivo
+                and "ANTI-AFK: ON" or "ANTI-AFK: OFF"
+
+            afkBotao.BackgroundColor3 =
+                AntiAFKAtivo and Cores.Lilas or Cores.Roxo
+        end)
+
+        local airBotao = Botao(
+            Area,
+            airwalkOn and "AIRWALK: ON" or "AIRWALK: OFF",
+            UDim2.new(0.1, 0, 0, 120),
+            UDim2.new(0.8, 0, 0, 40)
+        )
+
+        airBotao.BackgroundColor3 =
+            airwalkOn and Cores.Lilas or Cores.Roxo
+
+        airBotao.MouseButton1Click:Connect(function()
+            if not airwalkOn then
+                local ok = ligarAirWalk()
+                if ok then
+                    airBotao.Text = "AIRWALK: ON"
+                    airBotao.BackgroundColor3 = Cores.Lilas
+                end
+            else
+                desligarAirWalk()
+                airBotao.Text = "AIRWALK: OFF"
+                airBotao.BackgroundColor3 = Cores.Roxo
+            end
+        end)
+
+        Criar("TextLabel", {
+            Size = UDim2.new(0.9, 0, 0, 60),
+            Position = UDim2.new(0.05, 0, 0, 165),
+            BackgroundTransparency = 1,
+            Text = "ESP: toque no botão para ligar/desligar\nAirWalk: Espaço/Ctrl no PC | ⬆️⬇️ no mobile",
+            TextColor3 = Cores.Lilas,
+            Font = Enum.Font.Gotham,
+            TextSize = 11,
+            TextWrapped = true
+        }, Area)
+
+    elseif nome == "About" then
+        Criar("TextLabel", {
+            Size = UDim2.new(1, -20, 0, 100),
+            Position = UDim2.new(0, 10, 0, 20),
+            BackgroundTransparency = 1,
+            Text = "77 PANEL\nDesenvolvedor: Julian\nInterface Mobile\nESP + AirWalk",
+            TextColor3 = Cores.Lilas,
+            Font = Enum.Font.GothamBold,
+            TextSize = 15,
+            TextXAlignment = Enum.TextXAlignment.Left
+        }, Area)
+    end
+end
+
+-- =====================================================
+-- MENU LATERAL
+-- =====================================================
+
+for _, nome in ipairs(Abas) do
+    local b = Botao(
+        Menu,
+        nome,
+        UDim2.new(),
+        UDim2.new(1, 0, 0, 38)
+    )
+
+    b.Name = nome
+    b.BackgroundColor3 = Cores.Secundario
+    table.insert(BotoesMenu, b)
+
+    b.MouseButton1Click:Connect(function()
+        TrocarAba(nome)
+    end)
+end
+
+-- =====================================================
+-- BOTAO FLUTUANTE 77
+-- =====================================================
+
+local Flutuante = Botao(
+    Gui,
+    "77",
+    UDim2.new(0, 20, 0.5, -22),
+    UDim2.new(0, 48, 0, 48)
+)
+
+Flutuante.TextSize = 15
+Flutuante.ZIndex = 20
+Arredondar(Flutuante, 24)
+
+local function AlternarPainel()
+    PainelAberto = not PainelAberto
+    Janela.Visible = PainelAberto
+
+    if PainelAberto then
+        Janela.Size = UDim2.new(0, 0, 0, 0)
+
+        TweenService:Create(
+            Janela,
+            TweenInfo.new(
+                0.25,
+                Enum.EasingStyle.Quad,
+                Enum.EasingDirection.Out
+            ),
+            {Size = UDim2.new(0, 520, 0, 380)}
+        ):Play()
+    end
+end
+
+Flutuante.MouseButton1Click:Connect(AlternarPainel)
+
+UserInputService.InputBegan:Connect(function(input, processado)
+    if processado then return end
+
+    if input.KeyCode == Enum.KeyCode.J then
+        AlternarPainel()
+    end
+end)
+
+-- =====================================================
+-- ARRASTAR BOTAO FLUTUANTE
+-- =====================================================
+
+local arrastando = false
+local inicio
+local posicao
+
+Flutuante.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseButton1 then
+
+        arrastando = true
+        inicio = input.Position
+        posicao = Flutuante.Position
+
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                arrastando = false
+            end
+        end)
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if not arrastando then return end
+
+    if input.UserInputType == Enum.UserInputType.Touch
+        or input.UserInputType == Enum.UserInputType.MouseMovement then
+
+        local delta = input.Position - inicio
+
+        Flutuante.Position = UDim2.new(
+            posicao.X.Scale, posicao.X.Offset + delta.X,
+            posicao.Y.Scale, posicao.Y.Offset + delta.Y
+        )
+    end
+end)
+
+-- =====================================================
+-- PLAYERS ENTRANDO / SAINDO (ESP)
+-- =====================================================
+
+Players.PlayerAdded:Connect(function(p)
+    if espAtivo then criarESP(p) end
+    task.defer(function()
+        if AtualizarLista then AtualizarLista() end
+    end)
+end)
+
+Players.PlayerRemoving:Connect(function(p)
+    removerESP(p)
+    task.defer(function()
+        if AtualizarLista then AtualizarLista() end
+    end)
+end)
+
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    if espAtivo then
+        for _, p in ipairs(Players:GetPlayers()) do
+            if p ~= LocalPlayer then
+                removerESP(p)
+                criarESP(p)
+            end
+        end
+    end
+end)
+
+-- =====================================================
+-- ANTI-AFK
+-- =====================================================
+
+local ok, VirtualUser = pcall(function()
+    return game:GetService("VirtualUser")
+end)
+
+if ok then
+    LocalPlayer.Idled:Connect(function()
+        if AntiAFKAtivo then
+            pcall(function()
+                VirtualUser:CaptureController()
+                VirtualUser:ClickButton2(Vector2.new(0, 0))
+            end)
+        end
+    end)
+end
+
+-- =====================================================
+-- INICIALIZACAO
+-- =====================================================
+
+TrocarAba("Home")
+
+print("77 Panel carregado! Pressione [J] ou toque no botão 77.")
+print("ESP: aba Misc → toque no botão ESP: OFF para ligar")
+print("AirWalk: aba Misc → ativar → Espaço/Ctrl | ⬆️⬇️ mobile")
