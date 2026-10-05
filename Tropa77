@@ -1,3 +1,9 @@
+-- ============================================================
+-- 77 PANEL - VERSÃO INDEPENDENTE ADAPTADA
+-- Base: Julian(5).lua
+-- Backend/HTTP e loaders externos desativados.
+-- Recursos que dependiam do backend não são simulados.
+-- ============================================================
 --[=[
  d888b  db    db d888888b      .d888b.      db      db    db  .d8b.  
 88' Y8b 88    88   `88'        VP  `8D      88      88    88 d8' `8b 
@@ -1972,9 +1978,25 @@ G2L["aa"]["Position"] = UDim2.new(0, 185, 0, 60);
 G2L["ab"] = Instance.new("LocalScript", G2L["aa"]);
 
 
+
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.ESP.UICorner
 G2L["ac"] = Instance.new("UICorner", G2L["aa"]);
 G2L["ac"]["CornerRadius"] = UDim.new(0, 6);
+
+
+-- StarterGui.ScreenGui.MainPanel.MiscTela4.DESTROY GUI
+G2L["ad"] = Instance.new("TextButton", G2L["96"]);
+G2L["ad"]["BorderSizePixel"] = 0;
+G2L["ad"]["TextSize"] = 14;
+G2L["ad"]["TextColor3"] = Color3.fromRGB(255, 255, 255);
+G2L["ad"]["BackgroundColor3"] = Color3.fromRGB(132, 132, 132);
+G2L["ad"]["FontFace"] = Font.new([[rbxasset://fonts/families/SourceSansPro.json]], Enum.FontWeight.Bold, Enum.FontStyle.Normal);
+G2L["ad"]["BackgroundTransparency"] = 0.5;
+G2L["ad"]["Size"] = UDim2.new(0, 140, 0, 40);
+G2L["ad"]["BorderColor3"] = Color3.fromRGB(0, 0, 0);
+G2L["ad"]["Text"] = [[DESTROY GUI]];
+G2L["ad"]["Name"] = [[DESTROY GUI]];
+G2L["ad"]["Position"] = UDim2.new(0, 185, 0, 110);
 
 
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.DESTROY GUI.LocalScript
@@ -3157,71 +3179,8 @@ local script = G2L["3"];
 	end
 	
 	local function httpRequest(options)
-	
-	    options = options or {}
-	
-	    options.Method = string.upper(options.Method or "GET")
-	
-	    options.Headers = options.Headers or {}
-	
-	    if not options.Headers["Content-Type"] then
-	        options.Headers["Content-Type"] = "application/json"
-	    end
-	
-	    local ok, result = pcall(function()
-	
-	        if HTTP_REQUEST then
-	            return HTTP_REQUEST(options)
-	        end
-	
-	        if options.Method == "GET" then
-	
-	            return {
-	                Success = true,
-	                StatusCode = 200,
-	                Body = HttpService:GetAsync(options.Url)
-	            }
-	
-	        end
-	
-	        return {
-	            Success = true,
-	            StatusCode = 200,
-	            Body = HttpService:PostAsync(
-	                options.Url,
-	                options.Body or "",
-	                Enum.HttpContentType.ApplicationJson
-	            )
-	        }
-	
-	    end)
-	
-	    if not ok then
-	
-	        warn("========== HTTP ERROR ==========")
-	        warn("URL:", options.Url)
-	        warn("METHOD:", options.Method)
-	        warn(result)
-	        warn("===============================")
-	
-	        return {
-	            Success = false,
-	            StatusCode = 0,
-	            Body = tostring(result)
-	        }
-	
-	    end
-	
-	    result = normalizeResponse(result)
-	
-	    print("-----------------------------------------")
-	    print("[HTTP]", options.Method, options.Url)
-	    print("Status:", result.StatusCode)
-	    print("Success:", result.Success)
-	    print("Body:", tostring(result.Body))
-	    print("-----------------------------------------")
-	
-	    return result
+		-- Modo independente: não faz chamadas de rede.
+		return { Success = false, StatusCode = 0, Body = "", Offline = true }
 	end
 	
 	-- ============================================================
@@ -3345,7 +3304,7 @@ local script = G2L["3"];
 	-- ============================================================
 	-- [[ 4. CONFIGURAÇÕES GERAIS ]]
 	-- ============================================================
-	local SERVIDOR      = "https://foure20-backend.onrender.com"
+	local SERVIDOR      = nil -- backend removido nesta versão independente
 	local GAME_ID       = "77_GLOBAL"
 	local MEU_ID_DONO   = 11562350024
 	local IMAGEM_PADRAO = "rbxassetid://4620867021"
@@ -3542,7 +3501,7 @@ local script = G2L["3"];
 	-- ============================================================
 	-- [[ 7C. DISCORD WEBHOOK ]]
 	-- ============================================================
-	local DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1502778024532377612/enjwEffXfvZk4qCHB8U615RPU_oYfhB6DPMEoVhbVwDVo01hbnoichEE963f_3VKShJM"
+	local DISCORD_WEBHOOK = nil -- webhook removido; revogue o token antigo se ainda estiver ativo
 	
 	local coresWebhook = {
 		["OWNER"]    = 9830400,
@@ -6013,7 +5972,7 @@ local script = G2L["68"];
 		
 	
 		local sucesso, erro = pcall(function()
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/4e20panel/FREE-EMOTEEES/refs/heads/main/freeemotes.lua'))()
+			error("Free Emotes externo removido da versão independente")
 		end)
 	
 		if sucesso then
@@ -7306,7 +7265,7 @@ local script = G2L["a8"];
 	botao.MouseButton1Click:Connect(function()
 		print("Iniciando Carregamento do script...")
 		local sucesso, erro = pcall(function()
-			loadstring(game:HttpGet('https://raw.githubusercontent.com/DarkNetworks/Infinite-Yield/main/latest.lua'))()
+			error("Loader externo removido da versão independente")
 		end)
 		if sucesso then
 			
@@ -7318,212 +7277,371 @@ end;
 task.spawn(C_a8);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.ESP.LocalScript
 local function C_ab()
-    local script = G2L["ab"]
-    local Players = game:GetService("Players")
-    local RunService = game:GetService("RunService")
-    local TweenService = game:GetService("TweenService")
-    local localPlayer = Players.LocalPlayer
-    local botao = script.Parent
-    local iconeStatus = botao:FindFirstChild("TextLabel")
-
-    -- ESP leve e compatível com toque/mobile: sem Drawing API e sem cálculo de caixa por frame.
-    local ativo = false
-    local DISTANCIA_MAX = 500
-    local COR_ESP = Color3.fromRGB(180, 80, 255)
-    local espPorPlayer = {}
-    local conexaoAtualizacao
-
-    local playerGui = localPlayer:WaitForChild("PlayerGui")
-    local screenGui = playerGui:FindFirstChild("NotifESP")
-    if screenGui then screenGui:Destroy() end
-    screenGui = Instance.new("ScreenGui")
-    screenGui.Name = "NotifESP"
-    screenGui.ResetOnSpawn = false
-    screenGui.Parent = playerGui
-
-    local function notificar(titulo, texto, cor)
-        local frame = Instance.new("Frame")
-        frame.Size = UDim2.fromOffset(250, 58)
-        frame.Position = UDim2.new(1, 12, 1, -90)
-        frame.AnchorPoint = Vector2.new(1, 1)
-        frame.BackgroundColor3 = Color3.fromRGB(18, 18, 22)
-        frame.BackgroundTransparency = 0.08
-        frame.BorderSizePixel = 0
-        frame.Parent = screenGui
-        Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
-
-        local barra = Instance.new("Frame")
-        barra.Size = UDim2.new(0, 4, 1, 0)
-        barra.BackgroundColor3 = cor or COR_ESP
-        barra.BorderSizePixel = 0
-        barra.Parent = frame
-
-        local t = Instance.new("TextLabel")
-        t.BackgroundTransparency = 1
-        t.Position = UDim2.fromOffset(12, 5)
-        t.Size = UDim2.new(1, -20, 0, 23)
-        t.Font = Enum.Font.GothamBold
-        t.TextSize = 13
-        t.TextColor3 = Color3.new(1, 1, 1)
-        t.TextXAlignment = Enum.TextXAlignment.Left
-        t.Text = titulo
-        t.Parent = frame
-
-        local sub = Instance.new("TextLabel")
-        sub.BackgroundTransparency = 1
-        sub.Position = UDim2.fromOffset(12, 29)
-        sub.Size = UDim2.new(1, -20, 0, 18)
-        sub.Font = Enum.Font.Gotham
-        sub.TextSize = 11
-        sub.TextColor3 = Color3.fromRGB(210, 210, 210)
-        sub.TextXAlignment = Enum.TextXAlignment.Left
-        sub.Text = texto
-        sub.Parent = frame
-
-        TweenService:Create(frame, TweenInfo.new(0.2), {
-            Position = UDim2.new(1, -12, 1, -90)
-        }):Play()
-        task.delay(2.2, function()
-            if frame.Parent then frame:Destroy() end
-        end)
-    end
-
-    local function removerESP(player)
-        local dados = espPorPlayer[player]
-        if not dados then return end
-        if dados.highlight then dados.highlight:Destroy() end
-        if dados.billboard then dados.billboard:Destroy() end
-        espPorPlayer[player] = nil
-    end
-
-    local function criarESP(player)
-        if player == localPlayer or espPorPlayer[player] then return end
-        local dados = {}
-        local highlight = Instance.new("Highlight")
-        highlight.Name = "Painel77_ESP"
-        highlight.FillColor = COR_ESP
-        highlight.OutlineColor = Color3.new(1, 1, 1)
-        highlight.FillTransparency = 0.72
-        highlight.OutlineTransparency = 0.05
-        highlight.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
-        highlight.Enabled = false
-        highlight.Parent = workspace
-        dados.highlight = highlight
-
-        local billboard = Instance.new("BillboardGui")
-        billboard.Name = "Painel77_ESPLabel"
-        billboard.Size = UDim2.fromOffset(160, 28)
-        billboard.StudsOffset = Vector3.new(0, 3, 0)
-        billboard.AlwaysOnTop = true
-        billboard.Enabled = false
-        billboard.Parent = workspace
-
-        local label = Instance.new("TextLabel")
-        label.BackgroundTransparency = 1
-        label.Size = UDim2.fromScale(1, 1)
-        label.Font = Enum.Font.GothamBold
-        label.TextSize = 12
-        label.TextColor3 = Color3.new(1, 1, 1)
-        label.TextStrokeTransparency = 0.2
-        label.TextStrokeColor3 = Color3.new(0, 0, 0)
-        label.Parent = billboard
-        dados.label = label
-        dados.highlight = highlight
-        dados.billboard = billboard
-        espPorPlayer[player] = dados
-    end
-
-    local function atualizarPlayer(player, meuRoot)
-        local dados = espPorPlayer[player]
-        if not dados then return end
-        local character = player.Character
-        local root = character and character:FindFirstChild("HumanoidRootPart")
-        local humanoid = character and character:FindFirstChildOfClass("Humanoid")
-        if not character or not root or not humanoid or humanoid.Health <= 0 or not meuRoot then
-            dados.highlight.Enabled = false
-            dados.billboard.Enabled = false
-            return
-        end
-        local distancia = (root.Position - meuRoot.Position).Magnitude
-        local visivel = ativo and distancia <= DISTANCIA_MAX
-        dados.highlight.Adornee = character
-        dados.highlight.Enabled = visivel
-        dados.billboard.Adornee = root
-        dados.billboard.Enabled = visivel
-        if visivel then
-            dados.label.Text = player.DisplayName .. "  [" .. math.floor(distancia) .. "m]"
-        end
-    end
-
-    local function pararAtualizacao()
-        if conexaoAtualizacao then
-            conexaoAtualizacao:Disconnect()
-            conexaoAtualizacao = nil
-        end
-    end
-
-    local function desligar()
-        ativo = false
-        pararAtualizacao()
-        for _, dados in pairs(espPorPlayer) do
-            dados.highlight.Enabled = false
-            dados.billboard.Enabled = false
-        end
-        if iconeStatus then iconeStatus.TextColor3 = Color3.fromRGB(255, 0, 0) end
-    end
-
-    local function ligar()
-        ativo = true
-        for _, player in ipairs(Players:GetPlayers()) do
-            if player ~= localPlayer then criarESP(player) end
-        end
-        pararAtualizacao()
-        -- Atualiza 4 vezes por segundo, em vez de recalcular dezenas de partes a cada frame.
-        local acumulado = 0
-        conexaoAtualizacao = RunService.Heartbeat:Connect(function(dt)
-            if not ativo then return end
-            acumulado += dt
-            if acumulado < 0.25 then return end
-            acumulado = 0
-            local character = localPlayer.Character
-            local meuRoot = character and character:FindFirstChild("HumanoidRootPart")
-            for _, player in ipairs(Players:GetPlayers()) do
-                if player ~= localPlayer then
-                    if not espPorPlayer[player] then criarESP(player) end
-                    atualizarPlayer(player, meuRoot)
-                end
-            end
-        end)
-        if iconeStatus then iconeStatus.TextColor3 = Color3.fromRGB(0, 255, 0) end
-    end
-
-    -- Um único toque liga/desliga; Activated funciona com mouse e tela touch.
-    botao.Activated:Connect(function()
-        if ativo then
-            desligar()
-            notificar("ESP DESATIVADO", "Toque para ativar novamente", Color3.fromRGB(80, 80, 80))
-        else
-            ligar()
-            notificar("ESP ATIVADO", "Alcance: " .. DISTANCIA_MAX .. " studs", COR_ESP)
-        end
-    end)
-
-    Players.PlayerAdded:Connect(function(player)
-        if player ~= localPlayer and ativo then criarESP(player) end
-    end)
-    Players.PlayerRemoving:Connect(removerESP)
-    localPlayer.CharacterAdded:Connect(function()
-        task.delay(0.6, function()
-            if ativo then
-                for _, player in ipairs(Players:GetPlayers()) do
-                    if player ~= localPlayer then
-                        removerESP(player)
-                        criarESP(player)
-                    end
-                end
-            end
-        end)
-    end)
+local script = G2L["ab"];
+	-- ============================================================
+	--  ESP SCRIPT v3.0 — 4E20 Panel
+	--  Fix: tecla E só funciona se botão estiver ativo
+	--  Add: nome + distância (limite 100 studs)
+	--  Otimizado: throttle + cache + Drawing API (zero lag)
+	-- ============================================================
+	
+	local Players          = game:GetService("Players")
+	local RunService       = game:GetService("RunService")
+	local UserInputService = game:GetService("UserInputService")
+	local TweenService     = game:GetService("TweenService")
+	local Camera           = workspace.CurrentCamera
+	
+	local localPlayer = Players.LocalPlayer
+	local botao       = script.Parent
+	local iconeStatus = botao:FindFirstChild("TextLabel")
+	
+	-- Estado do BOTÃO (se o botão está habilitado para uso)
+	local botaoAtivo = false
+	-- Estado do ESP em si (ligado/desligado)
+	local espAtivo   = false
+	
+	local DISTANCIA_MAX = 500  -- Só mostra players dentro de X studs
+	
+	-- ============================================================
+	-- NOTIFICAÇÃO
+	-- ============================================================
+	local screenGui = localPlayer.PlayerGui:FindFirstChild("NotifESP")
+	if screenGui then screenGui:Destroy() end
+	screenGui = Instance.new("ScreenGui", localPlayer.PlayerGui)
+	screenGui.Name         = "NotifESP"
+	screenGui.ResetOnSpawn = false
+	
+	local function notificar(titulo, texto, cor)
+		cor = cor or Color3.fromRGB(180, 0, 0)
+		local frame = Instance.new("Frame", screenGui)
+		frame.Size             = UDim2.new(0, 270, 0, 64)
+		frame.Position         = UDim2.new(1, 10, 1, -100)
+		frame.AnchorPoint      = Vector2.new(1, 1)
+		frame.BackgroundColor3 = Color3.fromRGB(15, 15, 15)
+		frame.BackgroundTransparency = 0.08
+		frame.BorderSizePixel  = 0
+		frame.ZIndex           = 10
+		Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+	
+		local borda = Instance.new("Frame", frame)
+		borda.Size             = UDim2.new(0, 4, 1, 0)
+		borda.Position         = UDim2.new(1, -4, 0, 0)
+		borda.BackgroundColor3 = cor
+		borda.BorderSizePixel  = 0
+		borda.ZIndex           = 11
+		Instance.new("UICorner", borda).CornerRadius = UDim.new(0, 8)
+	
+		local lT = Instance.new("TextLabel", frame)
+		lT.Size = UDim2.new(1, -20, 0, 26); lT.Position = UDim2.new(0, 12, 0, 8)
+		lT.BackgroundTransparency = 1; lT.Text = titulo
+		lT.TextColor3 = Color3.fromRGB(255,255,255); lT.Font = Enum.Font.GothamBold
+		lT.TextSize = 13; lT.TextXAlignment = Enum.TextXAlignment.Left; lT.ZIndex = 11
+	
+		local lS = Instance.new("TextLabel", frame)
+		lS.Size = UDim2.new(1, -20, 0, 18); lS.Position = UDim2.new(0, 12, 0, 34)
+		lS.BackgroundTransparency = 1; lS.Text = texto
+		lS.TextColor3 = Color3.fromRGB(200,200,200); lS.Font = Enum.Font.Gotham
+		lS.TextSize = 11; lS.TextXAlignment = Enum.TextXAlignment.Left; lS.ZIndex = 11
+	
+		TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+			Position = UDim2.new(1, -16, 1, -100)
+		}):Play()
+	
+		task.delay(3.5, function()
+			TweenService:Create(frame, TweenInfo.new(0.3), {
+				Position = UDim2.new(1, 10, 1, -100)
+			}):Play()
+			task.wait(0.35)
+			if frame and frame.Parent then frame:Destroy() end
+		end)
+	end
+	
+	-- ============================================================
+	-- DADOS POR PLAYER — Drawing API (muito mais leve que Frames)
+	-- ============================================================
+	local espDados = {}
+	-- [userId] = {
+	--   boxTop, boxBot, boxLeft, boxRight  -> Drawing Lines
+	--   label  -> Drawing Text (nome + distância)
+	--   tick   -> throttle counter
+	-- }
+	
+	local COR_CAIXA   = Color3.fromRGB(255, 50, 50)
+	local COR_TEXTO   = Color3.fromRGB(255, 255, 255)
+	local ESPESSURA   = 1.5
+	local SKIP_TICKS  = 3  -- atualiza 1 a cada 3 frames por player
+	
+	local PARTES_NOME = {
+		"Head", "UpperTorso", "LowerTorso", "HumanoidRootPart",
+		"LeftUpperArm", "RightUpperArm", "LeftUpperLeg", "RightUpperLeg",
+	}
+	
+	-- ============================================================
+	-- CRIAR / REMOVER / ESCONDER  (Drawing API)
+	-- ============================================================
+	local function criarLinha()
+		local l = Drawing.new("Line")
+		l.Thickness  = ESPESSURA
+		l.Color      = COR_CAIXA
+		l.Visible    = false
+		l.ZIndex     = 5
+		return l
+	end
+	
+	local function criarESP(p)
+		if espDados[p.UserId] then return end
+		espDados[p.UserId] = {
+			boxTop   = criarLinha(),
+			boxBot   = criarLinha(),
+			boxLeft  = criarLinha(),
+			boxRight = criarLinha(),
+			label    = (function()
+				local t = Drawing.new("Text")
+				t.Size     = 13
+				t.Color    = COR_TEXTO
+				t.Outline  = true
+				t.OutlineColor = Color3.fromRGB(0, 0, 0)
+				t.Visible  = false
+				t.ZIndex   = 6
+				t.Font     = Drawing.Fonts.UI
+				return t
+			end)(),
+			tick = 0,
+		}
+	end
+	
+	local function removerESP(p)
+		local d = espDados[p.UserId]
+		if not d then return end
+		d.boxTop:Remove(); d.boxBot:Remove()
+		d.boxLeft:Remove(); d.boxRight:Remove()
+		d.label:Remove()
+		espDados[p.UserId] = nil
+	end
+	
+	local function esconderESP(p)
+		local d = espDados[p.UserId]
+		if not d then return end
+		d.boxTop.Visible   = false
+		d.boxBot.Visible   = false
+		d.boxLeft.Visible  = false
+		d.boxRight.Visible = false
+		d.label.Visible    = false
+	end
+	
+	local function limparTodosESP()
+		for _, p in pairs(Players:GetPlayers()) do
+			if p ~= localPlayer then esconderESP(p) end
+		end
+	end
+	
+	-- ============================================================
+	-- CALCULAR BOX 2D
+	-- ============================================================
+	local function calcularBox2D(char)
+		local minX, minY =  math.huge,  math.huge
+		local maxX, maxY = -math.huge, -math.huge
+		local algumVisible = false
+	
+		for _, nome in ipairs(PARTES_NOME) do
+			local part = char:FindFirstChild(nome)
+			if part and part:IsA("BasePart") then
+				local size = part.Size
+				local cf   = part.CFrame
+				local hx, hy, hz = size.X/2, size.Y/2, size.Z/2
+				local corners = {
+					cf:PointToWorldSpace(Vector3.new( hx,  hy,  hz)),
+					cf:PointToWorldSpace(Vector3.new(-hx,  hy,  hz)),
+					cf:PointToWorldSpace(Vector3.new( hx, -hy,  hz)),
+					cf:PointToWorldSpace(Vector3.new(-hx, -hy,  hz)),
+					cf:PointToWorldSpace(Vector3.new( hx,  hy, -hz)),
+					cf:PointToWorldSpace(Vector3.new(-hx,  hy, -hz)),
+					cf:PointToWorldSpace(Vector3.new( hx, -hy, -hz)),
+					cf:PointToWorldSpace(Vector3.new(-hx, -hy, -hz)),
+				}
+				for _, wp in ipairs(corners) do
+					local sp, onScreen = Camera:WorldToViewportPoint(wp)
+					if onScreen then
+						algumVisible = true
+						if sp.X < minX then minX = sp.X end
+						if sp.Y < minY then minY = sp.Y end
+						if sp.X > maxX then maxX = sp.X end
+						if sp.Y > maxY then maxY = sp.Y end
+					end
+				end
+			end
+		end
+	
+		if not algumVisible then return nil end
+		return minX, minY, maxX, maxY
+	end
+	
+	-- ============================================================
+	-- ATUALIZAR ESP DE UM PLAYER
+	-- ============================================================
+	local function atualizarESP(p, localRoot)
+		local d = espDados[p.UserId]
+		if not d then return end
+	
+		-- Throttle
+		d.tick = d.tick + 1
+		if d.tick < SKIP_TICKS then return end
+		d.tick = 0
+	
+		local char = p.Character
+		if not char then esconderESP(p) return end
+	
+		local root     = char:FindFirstChild("HumanoidRootPart")
+		local humanoid = char:FindFirstChildOfClass("Humanoid")
+		if not root or not humanoid or humanoid.Health <= 0 then
+			esconderESP(p) return
+		end
+	
+		-- ─── FILTRO DE DISTÂNCIA (100 studs) ───────────────────
+		if localRoot then
+			local dist = (root.Position - localRoot.Position).Magnitude
+			if dist > DISTANCIA_MAX then
+				esconderESP(p) return
+			end
+		end
+	
+		-- ─── CHECA SE ESTÁ NA TELA ─────────────────────────────
+		local _, onScreen = Camera:WorldToViewportPoint(root.Position)
+		if not onScreen then esconderESP(p) return end
+	
+		-- ─── BOX 2D ────────────────────────────────────────────
+		local minX, minY, maxX, maxY = calcularBox2D(char)
+		if not minX then esconderESP(p) return end
+	
+		local pad = 3
+		minX = minX - pad; minY = minY - pad
+		maxX = maxX + pad; maxY = maxY + pad
+	
+		-- Drawing Line usa From/To com Vector2
+		-- Topo
+		d.boxTop.From    = Vector2.new(minX, minY)
+		d.boxTop.To      = Vector2.new(maxX, minY)
+		d.boxTop.Visible = true
+		-- Base
+		d.boxBot.From    = Vector2.new(minX, maxY)
+		d.boxBot.To      = Vector2.new(maxX, maxY)
+		d.boxBot.Visible = true
+		-- Esquerda
+		d.boxLeft.From    = Vector2.new(minX, minY)
+		d.boxLeft.To      = Vector2.new(minX, maxY)
+		d.boxLeft.Visible = true
+		-- Direita
+		d.boxRight.From    = Vector2.new(maxX, minY)
+		d.boxRight.To      = Vector2.new(maxX, maxY)
+		d.boxRight.Visible = true
+	
+		-- ─── NOME + DISTÂNCIA ──────────────────────────────────
+		local dist = localRoot
+			and math.floor((root.Position - localRoot.Position).Magnitude)
+			or 0
+	
+		d.label.Text     = p.DisplayName .. "  [" .. dist .. "m]"
+		d.label.Position = Vector2.new(minX, minY - 17)
+		d.label.Visible  = true
+	end
+	
+	-- ============================================================
+	-- LOOP PRINCIPAL
+	-- ============================================================
+	local conexaoESP = nil
+	
+	local function iniciarLoopESP()
+		if conexaoESP then return end
+		conexaoESP = RunService.Heartbeat:Connect(function()
+			if not espAtivo then return end
+	
+			local localRoot = localPlayer.Character
+				and localPlayer.Character:FindFirstChild("HumanoidRootPart")
+	
+			for _, p in ipairs(Players:GetPlayers()) do
+				if p ~= localPlayer then
+					if not espDados[p.UserId] then criarESP(p) end
+					atualizarESP(p, localRoot)
+				end
+			end
+		end)
+	end
+	
+	iniciarLoopESP()
+	
+	-- ============================================================
+	-- TOGGLE ESP  (liga/desliga o ESP em si)
+	-- ============================================================
+	local function toggleESP()
+		-- ⚠️ SÓ FUNCIONA SE O BOTÃO ESTIVER ATIVO
+		if not botaoAtivo then return end
+	
+		espAtivo = not espAtivo
+	
+		if espAtivo then
+			for _, p in ipairs(Players:GetPlayers()) do
+				if p ~= localPlayer then criarESP(p) end
+			end
+			if iconeStatus then iconeStatus.TextColor3 = Color3.fromRGB(0, 255, 0) end
+			notificar("ESP ATIVADO", "Pressione [E] para desativar | Range: " .. DISTANCIA_MAX .. " studs", Color3.fromRGB(120, 0, 0))
+		else
+			limparTodosESP()
+			if iconeStatus then iconeStatus.TextColor3 = Color3.fromRGB(255, 0, 0) end
+			notificar("ESP DESATIVADO", "Pressione [E] para ativar", Color3.fromRGB(60, 60, 60))
+		end
+	end
+	
+	-- ============================================================
+	-- BOTÃO — controla se o sistema está disponível
+	-- ============================================================
+	botao.MouseButton1Click:Connect(function()
+		botaoAtivo = not botaoAtivo
+	
+		if not botaoAtivo then
+			-- Desativa tudo ao desligar o botão
+			if espAtivo then
+				espAtivo = false
+				limparTodosESP()
+			end
+			if iconeStatus then iconeStatus.TextColor3 = Color3.fromRGB(255, 0, 0) end
+			notificar("ESP DESATIVADO", "Botão desligado", Color3.fromRGB(60, 60, 60))
+		else
+			notificar("ESP PRONTO", "Pressione [E] para ativar o ESP", Color3.fromRGB(180, 100, 0))
+		end
+	end)
+	
+	-- ============================================================
+	-- TECLA [E] — só funciona se botaoAtivo = true
+	-- ============================================================
+	UserInputService.InputBegan:Connect(function(input, gameProcessed)
+		if gameProcessed then return end
+		if input.KeyCode == Enum.KeyCode.E then
+			toggleESP()
+		end
+	end)
+	
+	-- ============================================================
+	-- PLAYERS ENTRANDO / SAINDO / RESPAWN
+	-- ============================================================
+	Players.PlayerAdded:Connect(function(p)
+		if espAtivo then criarESP(p) end
+	end)
+	
+	Players.PlayerRemoving:Connect(function(p)
+		removerESP(p)
+	end)
+	
+	localPlayer.CharacterAdded:Connect(function()
+		task.wait(0.5)
+		if espAtivo then
+			for _, p in ipairs(Players:GetPlayers()) do
+				if p ~= localPlayer then
+					removerESP(p)
+					criarESP(p)
+				end
+			end
+		end
+	end)
 end;
 task.spawn(C_ab);
 -- StarterGui.ScreenGui.MainPanel.MiscTela4.DESTROY GUI.LocalScript
@@ -7541,31 +7659,11 @@ local script = G2L["ae"];
 	local localPlayer = Players.LocalPlayer
 	local botao       = script.Parent
 	
-	local SERVIDOR = "https://foure20-backend-y9jm.onrender.com"
+	local SERVIDOR = nil -- backend removido nesta versão independente
 	local GAME_ID  = "77_GLOBAL"
 	
-	-- Desregistra do backend
-	local function desregistrarBackend()
-		pcall(function()
-			local r = nil
-			if syn and syn.request then r = syn.request
-			elseif http_request then r = http_request
-			elseif request then r = request
-			end
-			local body = HttpService:JSONEncode({
-				player = localPlayer.Name,
-				userId = localPlayer.UserId,
-				active = false,
-				gameId = GAME_ID
-			})
-			if r then
-				r({ Url=SERVIDOR.."/setactive", Method="POST",
-					Headers={["Content-Type"]="application/json"}, Body=body })
-			else
-				HttpService:PostAsync(SERVIDOR.."/setactive", body, Enum.HttpContentType.ApplicationJson)
-			end
-		end)
-	end
+	-- Modo independente: não há registro externo para desregistrar.
+	local function desregistrarBackend() return true end
 	
 	-- Remove tags visuais de todos os players
 	local function removerTags()
@@ -7736,10 +7834,10 @@ local script = G2L["b4"];
 			-- Verifica se o personagem é R6 ou R15
 			if humanoid.RigType == Enum.HumanoidRigType.R6 then
 				print("Detectado R6 - Carregando script...")
-				loadstring(game:HttpGet("https://pastefy.app/wa3v2Vgm/raw"))()
+				error("Loader externo R6 removido da versão independente")
 			elseif humanoid.RigType == Enum.HumanoidRigType.R15 then
 				print("Detectado R15 - Carregando script...")
-				loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+				error("Loader externo R15 removido da versão independente")
 			end
 		end)
 	
