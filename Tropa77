@@ -3304,7 +3304,7 @@ local script = G2L["3"];
 	-- ============================================================
 	-- [[ 4. CONFIGURAÇÕES GERAIS ]]
 	-- ============================================================
-	local SERVIDOR      = nil -- backend removido nesta versão independente
+	local SERVIDOR      = "" -- backend offline; chamadas de rede desativadas
 	local GAME_ID       = "77_GLOBAL"
 	local MEU_ID_DONO   = 11562350024
 	local IMAGEM_PADRAO = "rbxassetid://4620867021"
@@ -7659,7 +7659,7 @@ local script = G2L["ae"];
 	local localPlayer = Players.LocalPlayer
 	local botao       = script.Parent
 	
-	local SERVIDOR = nil -- backend removido nesta versão independente
+	local SERVIDOR = "" -- backend offline; chamadas de rede desativadas
 	local GAME_ID  = "77_GLOBAL"
 	
 	-- Modo independente: não há registro externo para desregistrar.
