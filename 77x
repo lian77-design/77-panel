@@ -1,13 +1,15 @@
--- 77 PANEL MOBILE | COMPLETO + FREE EMOTES
--- LocalScript em StarterPlayerScripts; funcoes locais para testes em experiencia propria.
+-- 77 PANEL MOBILE | COMPLETO + FREE EMOTES (CORRIGIDO)
+-- LocalScript em StarterPlayerScripts; uso em experiência própria
 local Players=game:GetService('Players')
 local RunService=game:GetService('RunService')
 local UIS=game:GetService('UserInputService')
 local TweenService=game:GetService('TweenService')
 local Stats=game:GetService('Stats')
+local VirtualUser=game:GetService('VirtualUser')
 local LP=Players.LocalPlayer
 local PG=LP:WaitForChild('PlayerGui')
 local C={Fundo=Color3.fromRGB(22,10,43),Sec=Color3.fromRGB(30,15,55),Roxo=Color3.fromRGB(91,33,182),Lilas=Color3.fromRGB(168,85,247),Branco=Color3.fromRGB(240,240,240),Cinza=Color3.fromRGB(180,180,180),Verde=Color3.fromRGB(0,200,80),Vermelho=Color3.fromRGB(220,50,50)}
+
 local function new(cl,props,parent)
  local o=Instance.new(cl)
  for k,v in pairs(props or {}) do o[k]=v end
@@ -15,22 +17,34 @@ local function new(cl,props,parent)
  return o
 end
 local function corner(o,r) new('UICorner',{CornerRadius=UDim.new(0,r)},o) end
-for _,name in ipairs({'77Panel','77ESP','77AirwalkControls'}) do local old=PG:FindFirstChild(name); if old then old:Destroy() end end
+
+for _,name in ipairs({'77Panel','77ESP','77AirwalkControls'}) do
+ local old=PG:FindFirstChild(name); if old then old:Destroy() end
+end
+
 local gui=new('ScreenGui',{Name='77Panel',ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=999},PG)
 local alive=true
 local connections={}
 local function conn(sig,fn) local c=sig:Connect(fn); table.insert(connections,c); return c end
+
+-- =========================================================
+-- INTERFACE
+-- =========================================================
 local panel=new('Frame',{Name='JanelaPrincipal',Size=UDim2.fromOffset(340,250),Position=UDim2.new(.5,-170,.5,-125),BackgroundColor3=C.Fundo,BorderSizePixel=0,Visible=false,ClipsDescendants=true},gui)
 corner(panel,10)
 new('ImageLabel',{Name='FundoImagem',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Image='rbxassetid://96909775948818',ScaleType=Enum.ScaleType.Crop,ZIndex=1},panel)
 new('Frame',{Name='Overlay',Size=UDim2.fromScale(1,1),BackgroundColor3=Color3.fromRGB(10,5,20),BackgroundTransparency=.35,BorderSizePixel=0,ZIndex=2},panel)
 new('UIStroke',{Color=C.Lilas,Thickness=1.5,Transparency=.45},panel)
+
 local bar=new('Frame',{Size=UDim2.new(1,0,0,30),BackgroundColor3=C.Sec,BackgroundTransparency=.25,BorderSizePixel=0,ZIndex=3},panel)
 new('TextLabel',{Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Text='77 PANEL',TextColor3=C.Branco,Font=Enum.Font.GothamBold,TextSize=13,ZIndex=4},bar)
+
 local menu=new('Frame',{Position=UDim2.fromOffset(0,30),Size=UDim2.new(0,78,1,-30),BackgroundColor3=C.Sec,BackgroundTransparency=.25,BorderSizePixel=0,ZIndex=3},panel)
 new('UIPadding',{PaddingTop=UDim.new(0,6),PaddingLeft=UDim.new(0,5),PaddingRight=UDim.new(0,5)},menu)
 new('UIListLayout',{Padding=UDim.new(0,4),SortOrder=Enum.SortOrder.LayoutOrder},menu)
+
 local area=new('Frame',{Position=UDim2.fromOffset(78,30),Size=UDim2.new(1,-78,1,-30),BackgroundColor3=C.Fundo,BackgroundTransparency=.30,BorderSizePixel=0,ClipsDescendants=true,ZIndex=3},panel)
+
 local function button(parent,text,pos,size,color)
  local b=new('TextButton',{Position=pos or UDim2.new(),Size=size or UDim2.fromOffset(100,24),BackgroundColor3=color or C.Roxo,BackgroundTransparency=.15,BorderSizePixel=0,Text=text,TextColor3=C.Branco,Font=Enum.Font.GothamBold,TextSize=10,ZIndex=6},parent)
  corner(b,6); return b
@@ -46,13 +60,22 @@ local function notify(title,msg,color)
  label(n,msg,UDim2.fromOffset(9,27),UDim2.new(1,-18,0,17),9,C.Cinza)
  task.delay(3,function() if n.Parent then n:Destroy() end end)
 end
+
+-- =========================================================
+-- STATE
+-- =========================================================
 local selected=nil
-local spectating,following,espOn,airOn,antiAfkIndicator=false,false,false,false,false
+local spectating,following,espOn,airOn=false,false,false,false
+local antiAfkOn=false
+local antiAfkConn=nil
+local antiAfkToken=0
 local followConn,airConn,airFloor,airControls=nil,nil,nil,nil
 local upHeld,downHeld=false,false
 local refreshTarget=function() end
+
 local function ownHum() local ch=LP.Character; return ch and ch:FindFirstChildOfClass('Humanoid') end
 local function restoreCamera() local cam=workspace.CurrentCamera; local hum=ownHum(); if cam and hum then cam.CameraType=Enum.CameraType.Custom; cam.CameraSubject=hum end end
+
 local function stopFollow()
  following=false
  if followConn then followConn:Disconnect(); followConn=nil end
@@ -60,17 +83,20 @@ local function stopFollow()
  if not spectating then restoreCamera() end
 end
 local function stopSpectate() spectating=false; if not following then restoreCamera() end end
+
 local function validRoot(p)
  if not p or p.Parent~=Players then return nil end
  local ch=p.Character; local hum=ch and ch:FindFirstChildOfClass('Humanoid'); local root=ch and ch:FindFirstChild('HumanoidRootPart')
  if not root or not hum or hum.Health<=0 then return nil end
  return root,hum
 end
+
 local function tpTo(p)
  local mine=validRoot(LP); local target=validRoot(p)
  if not mine or not target then notify('TP','Personagem indisponivel',C.Vermelho); return end
  mine.CFrame=target.CFrame*CFrame.new(0,0,3); notify('TP','Movimento local solicitado',C.Verde)
 end
+
 local function startFollow(p)
  if not validRoot(LP) or not validRoot(p) then notify('FOLLOW','Jogador indisponivel',C.Vermelho); return false end
  stopSpectate(); stopFollow(); following=true
@@ -84,6 +110,7 @@ local function startFollow(p)
  end)
  return true
 end
+
 local function startSpectate(p)
  local _,hum=validRoot(p)
  if not hum then notify('ESPECTAR','Jogador indisponivel',C.Vermelho); return false end
@@ -91,19 +118,57 @@ local function startSpectate(p)
  local cam=workspace.CurrentCamera; if cam then cam.CameraType=Enum.CameraType.Custom; cam.CameraSubject=hum end
  return true
 end
+
 conn(RunService.Heartbeat,function()
  if not alive or not spectating then return end
  local _,hum=validRoot(selected); if not hum then stopSpectate(); return end
  local cam=workspace.CurrentCamera; if cam and cam.CameraSubject~=hum then cam.CameraSubject=hum end
 end)
--- ESP ORIGINAL: BillboardGui e calculo de caixa 2D por partes
+
+-- =========================================================
+-- ANTI-AFK REAL
+-- =========================================================
+local function startAntiAfk()
+ if antiAfkOn then return end
+ antiAfkOn=true
+ antiAfkToken+=1
+ local myToken=antiAfkToken
+ antiAfkConn=LP.Idled:Connect(function()
+  pcall(function()
+   VirtualUser:CaptureController()
+   VirtualUser:ClickButton2(Vector2.new(0,0))
+  end)
+ end)
+ task.spawn(function()
+  while alive and antiAfkOn and myToken==antiAfkToken do
+   task.wait(60)
+   if not antiAfkOn then break end
+   pcall(function()
+    VirtualUser:CaptureController()
+    VirtualUser:ClickButton2(Vector2.new(0,0))
+   end)
+  end
+ end)
+end
+local function stopAntiAfk()
+ antiAfkOn=false
+ antiAfkToken+=1
+ if antiAfkConn then antiAfkConn:Disconnect(); antiAfkConn=nil end
+end
+
+-- =========================================================
+-- ESP (mostra invisíveis)
+-- =========================================================
 local espObjects,partsCache={},{}
 local ESP_RANGE,ESP_INTERVAL,espTimer=500,.05,0
+local PARTS_REFRESH=1.0
 local COR_CAIXA=Color3.fromRGB(60,25,105)
 local COR_TEXTO=Color3.fromRGB(180,130,240)
+
 local espGui=new('ScreenGui',{Name='77ESP',ResetOnSpawn=false,IgnoreGuiInset=true,DisplayOrder=5},PG)
 local camera=workspace.CurrentCamera
 conn(workspace:GetPropertyChangedSignal('CurrentCamera'),function() camera=workspace.CurrentCamera end)
+
 local function removeESP(p)
  local d=espObjects[p]; if not d then return end
  if d.bbBox then d.bbBox:Destroy() end
@@ -112,6 +177,7 @@ local function removeESP(p)
  espObjects[p]=nil
 end
 local function hideESP(d) d.bbBox.Enabled=false; d.bbNome.Enabled=false end
+
 local function createESP(p)
  if p==LP or espObjects[p] then return end
  local ch=p.Character; if not ch or not ch:FindFirstChild('Head') then return end
@@ -122,18 +188,29 @@ local function createESP(p)
  local txt=new('TextLabel',{Name='Nome',Size=UDim2.fromScale(1,1),BackgroundTransparency=1,Text='',TextColor3=COR_TEXTO,TextStrokeTransparency=.2,TextStrokeColor3=Color3.new(0,0,0),Font=Enum.Font.GothamBold,TextSize=14,TextTruncate=Enum.TextTruncate.AtEnd},bbNome)
  espObjects[p]={bbBox=bbBox,bbNome=bbNome,label=txt,char=ch}
 end
+
 local function visibleParts(ch)
- if partsCache[ch] then return partsCache[ch] end
+ local c=partsCache[ch]
+ local now=os.clock()
+ if c and (now-c.t)<PARTS_REFRESH then return c.list end
  local list={}; local root=ch:FindFirstChild('HumanoidRootPart')
  for _,obj in ipairs(ch:GetDescendants()) do
-  if obj:IsA('BasePart') and obj.Transparency<1 and obj.Name~='Handle' then
+  if obj:IsA('BasePart') then
    local skip=false; local parent=obj.Parent
-   while parent and parent~=ch do if parent:IsA('Tool') then skip=true; break end; parent=parent.Parent end
-   if not skip and (not root or (obj.Position-root.Position).Magnitude<=8) then table.insert(list,obj) end
+   while parent and parent~=ch do
+    if parent:IsA('Tool') then skip=true; break end
+    parent=parent.Parent
+   end
+   if not skip and obj.Name~='Handle'
+    and (not root or (obj.Position-root.Position).Magnitude<=10) then
+    table.insert(list,obj)
+   end
   end
  end
- partsCache[ch]=list; return list
+ partsCache[ch]={list=list,t=now}
+ return list
 end
+
 local function calculateBox(ch)
  if not camera then return nil end
  local minX,minY,maxX,maxY=math.huge,math.huge,-math.huge,-math.huge
@@ -141,17 +218,23 @@ local function calculateBox(ch)
  for _,part in ipairs(visibleParts(ch)) do
   if part.Parent then
    local sz,cf=part.Size,part.CFrame
-   for _,x in ipairs({-sz.X/2,sz.X/2}) do for _,y in ipairs({-sz.Y/2,sz.Y/2}) do for _,z in ipairs({-sz.Z/2,sz.Z/2}) do
-    local point,onScreen=camera:WorldToViewportPoint(cf:PointToWorldSpace(Vector3.new(x,y,z)))
-    if onScreen and point.Z>0 then
-     visible=true; minX=math.min(minX,point.X); minY=math.min(minY,point.Y)
-     maxX=math.max(maxX,point.X); maxY=math.max(maxY,point.Y)
+   for _,x in ipairs({-sz.X/2,sz.X/2}) do
+    for _,y in ipairs({-sz.Y/2,sz.Y/2}) do
+     for _,z in ipairs({-sz.Z/2,sz.Z/2}) do
+      local point,onScreen=camera:WorldToViewportPoint(cf:PointToWorldSpace(Vector3.new(x,y,z)))
+      if onScreen and point.Z>0 then
+       visible=true
+       minX=math.min(minX,point.X); minY=math.min(minY,point.Y)
+       maxX=math.max(maxX,point.X); maxY=math.max(maxY,point.Y)
+      end
+     end
     end
-   end end end
+   end
   end
  end
  if visible then return minX,minY,maxX,maxY end
 end
+
 local function updateESP(p,ownRoot)
  local d=espObjects[p]; if not d then return end
  local ch=p.Character; if not ch or ch~=d.char then hideESP(d); return end
@@ -169,6 +252,7 @@ local function updateESP(p,ownRoot)
  local display=p.DisplayName; if #display>20 then display=string.sub(display,1,20)..'...' end
  d.label.Text=display..' ['..math.floor(distance)..'m]'; d.bbNome.Enabled=true
 end
+
 conn(RunService.Heartbeat,function(dt)
  if not alive or not espOn then return end
  espTimer+=dt; if espTimer<ESP_INTERVAL then return end; espTimer=0
@@ -181,19 +265,27 @@ conn(RunService.Heartbeat,function(dt)
   end
  end
 end)
+
 local function toggleESP()
  espOn=not espOn
- if espOn then for _,p in ipairs(Players:GetPlayers()) do if p~=LP then createESP(p) end end
- else for p in pairs(espObjects) do removeESP(p) end end
- notify('ESP',espOn and 'ESP original ativado' or 'ESP desativado',C.Lilas)
+ if espOn then
+  for _,p in ipairs(Players:GetPlayers()) do if p~=LP then createESP(p) end end
+ else
+  for p in pairs(espObjects) do removeESP(p) end
+ end
+ notify('ESP',espOn and 'ESP ativado' or 'ESP desativado',C.Lilas)
 end
-local upHeld,downHeld=false,false
+
+-- =========================================================
+-- AIRWALK
+-- =========================================================
 local function stopAir()
  airOn=false; upHeld=false; downHeld=false
  if airConn then airConn:Disconnect(); airConn=nil end
  if airFloor then airFloor:Destroy(); airFloor=nil end
  if airControls then airControls:Destroy(); airControls=nil end
 end
+
 local function startAir()
  local root,hum=validRoot(LP)
  if not root then notify('AIRWALK','Personagem indisponivel',C.Vermelho); return false end
@@ -220,8 +312,12 @@ local function startAir()
  end)
  return true
 end
+
 conn(LP.CharacterAdded,function() stopAir(); stopFollow(); stopSpectate() end)
--- FREE EMOTES: carregamento externo; nao disponivel em LocalScripts comuns do Studio.
+
+-- =========================================================
+-- FREE EMOTES
+-- =========================================================
 local freeEmotesLoading=false
 local function ativarFreeEmotes()
  if freeEmotesLoading then return end
@@ -239,11 +335,17 @@ local function ativarFreeEmotes()
   else warn('[77 PANEL] Free Emotes: '..tostring(err)); notify('FREE EMOTES','Falha ao carregar; veja console',C.Vermelho) end
  end)
 end
+
+-- =========================================================
+-- TABS
+-- =========================================================
 local menuButtons={}
 local function clearArea() for _,o in ipairs(area:GetChildren()) do o:Destroy() end end
+
 local function showTab(tab)
  clearArea()
  for name,b in pairs(menuButtons) do b.BackgroundColor3=name==tab and C.Roxo or C.Sec end
+
  if tab=='Home' then
   local card=new('Frame',{Position=UDim2.fromOffset(8,10),Size=UDim2.new(1,-16,0,92),BackgroundColor3=C.Sec,BackgroundTransparency=.15,BorderSizePixel=0,ZIndex=5},area)
   corner(card,8)
@@ -255,12 +357,14 @@ local function showTab(tab)
   local clock=label(card,'',UDim2.fromOffset(8,70),UDim2.new(1,-16,0,17),9,C.Cinza)
   task.spawn(function()
    while alive and card.Parent do
-    local value='N/A'; pcall(function() value=tostring(math.floor(Stats.Network.ServerStatsItem['Data Ping']:GetValue()))..' ms' end)
+    local value='N/A'
+    pcall(function() value=tostring(math.floor(Stats.Network.ServerStatsItem['Data Ping']:GetValue()))..' ms' end)
     ping.Text='Ping: '..value; users.Text='Users: '..#Players:GetPlayers(); clock.Text=os.date('%d/%m/%Y - %H:%M:%S')
     task.wait(1)
    end
   end)
   label(area,'77 PANEL  |  MOBILE',UDim2.fromOffset(12,115),UDim2.new(1,-24,0,20),12,C.Lilas)
+
  elseif tab=='Target' then
   local search=new('TextBox',{Position=UDim2.fromOffset(8,5),Size=UDim2.new(1,-16,0,24),BackgroundColor3=C.Sec,Text='',PlaceholderText='Pesquisar apelido / usuario / ID',PlaceholderColor3=C.Cinza,TextColor3=C.Branco,Font=Enum.Font.Gotham,TextSize=10,ClearTextOnFocus=false,BorderSizePixel=0,ZIndex=6},area)
   corner(search,5)
@@ -306,7 +410,9 @@ local function showTab(tab)
   local function matches()
    local list={}; local q=string.lower(search.Text)
    for _,p in ipairs(Players:GetPlayers()) do
-    if p~=LP and (string.find(string.lower(p.DisplayName),q,1,true) or string.find(string.lower(p.Name),q,1,true) or string.find(tostring(p.UserId),q,1,true)) then table.insert(list,p) end
+    if p~=LP and (string.find(string.lower(p.DisplayName),q,1,true) or string.find(string.lower(p.Name),q,1,true) or string.find(tostring(p.UserId),q,1,true)) then
+     table.insert(list,p)
+    end
    end
    table.sort(list,function(a,b) return string.lower(a.DisplayName)<string.lower(b.DisplayName) end)
    return list
@@ -328,38 +434,61 @@ local function showTab(tab)
   action('>',46,135,35,function() local list=matches(); if #list==0 then return end; local i=table.find(list,selected) or 0; selected=list[(i%#list)+1]; rebuild() end)
   action('TP',85,135,154,function() tpTo(selected) end,C.Lilas)
   rebuild()
+
  elseif tab=='Misc' then
   local esp=button(area,espOn and 'ESP: ON' or 'ESP: OFF',UDim2.new(.08,0,0,12),UDim2.new(.84,0,0,30))
   conn(esp.MouseButton1Click,function() toggleESP(); esp.Text=espOn and 'ESP: ON' or 'ESP: OFF' end)
-  local afk=button(area,antiAfkIndicator and 'ANTI-AFK: INDICADOR ON' or 'ANTI-AFK: OFF',UDim2.new(.08,0,0,50),UDim2.new(.84,0,0,30))
+
+  local afk=button(area,antiAfkOn and 'ANTI-AFK: ON' or 'ANTI-AFK: OFF',UDim2.new(.08,0,0,50),UDim2.new(.84,0,0,30))
   conn(afk.MouseButton1Click,function()
-   antiAfkIndicator=not antiAfkIndicator; afk.Text=antiAfkIndicator and 'ANTI-AFK: INDICADOR ON' or 'ANTI-AFK: OFF'
-   notify('ANTI-AFK','Indicador apenas; nao evita desconexao',C.Lilas)
+   if antiAfkOn then
+    stopAntiAfk(); afk.Text='ANTI-AFK: OFF'
+    notify('ANTI-AFK','Desativado')
+   else
+    startAntiAfk(); afk.Text='ANTI-AFK: ON'
+    notify('ANTI-AFK','Ativado',C.Verde)
+   end
   end)
+
   local air=button(area,airOn and 'AIRWALK: ON' or 'AIRWALK: OFF',UDim2.new(.08,0,0,88),UDim2.new(.84,0,0,30))
-  conn(air.MouseButton1Click,function() if airOn then stopAir() else startAir() end; air.Text=airOn and 'AIRWALK: ON' or 'AIRWALK: OFF' end)
-  -- NOVO BOTAO FREE EMOTES NA ABA MISC
+  conn(air.MouseButton1Click,function()
+   if airOn then stopAir() else startAir() end
+   air.Text=airOn and 'AIRWALK: ON' or 'AIRWALK: OFF'
+  end)
+
   local emotes=button(area,'FREE EMOTES',UDim2.new(.08,0,0,126),UDim2.new(.84,0,0,30),C.Lilas)
   conn(emotes.MouseButton1Click,ativarFreeEmotes)
+
   local help=label(area,'AirWalk: UP/DOWN no celular\nEspaco/Ctrl no computador',UDim2.new(.05,0,0,164),UDim2.new(.9,0,0,43),9,C.Lilas)
   help.TextWrapped=true
+
  elseif tab=='About' then
-  local info=label(area,'77 PANEL\nDesenvolvedor: Julian\nInterface Mobile\nESP + Target + AirWalk + Free Emotes\nUso em experiencia propria',UDim2.fromOffset(10,12),UDim2.new(1,-20,0,125),11,C.Lilas)
+  local info=label(area,'77 PANEL\nDesenvolvedor: Julian\nInterface Mobile\nESP + Target + AirWalk + Free Emotes\nAnti-AFK real (VirtualUser)\nUso em experiencia propria',UDim2.fromOffset(10,12),UDim2.new(1,-20,0,140),11,C.Lilas)
   info.TextWrapped=true
  end
 end
+
+-- =========================================================
+-- MENU / FLOATING
+-- =========================================================
 for _,tab in ipairs({'Home','Target','Misc','About'}) do
  local b=button(menu,tab,UDim2.new(),UDim2.new(1,0,0,30),C.Sec)
  b.Name=tab; menuButtons[tab]=b
  conn(b.MouseButton1Click,function() showTab(tab) end)
 end
+
 local floating=button(gui,'77',UDim2.new(0,15,.5,-17),UDim2.fromOffset(34,34),C.Roxo)
 floating.ZIndex=50; corner(floating,17)
+
 local open=false
 local function togglePanel()
  open=not open; panel.Visible=open
- if open then panel.Size=UDim2.fromOffset(0,0); TweenService:Create(panel,TweenInfo.new(.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(340,250)}):Play() end
+ if open then
+  panel.Size=UDim2.fromOffset(0,0)
+  TweenService:Create(panel,TweenInfo.new(.22,Enum.EasingStyle.Quad,Enum.EasingDirection.Out),{Size=UDim2.fromOffset(340,250)}):Play()
+ end
 end
+
 local dragInput,dragStart,dragOrigin=nil,nil,nil
 local didDrag=false
 conn(floating.InputBegan,function(input)
@@ -379,17 +508,24 @@ conn(UIS.InputChanged,function(input)
 end)
 conn(UIS.InputEnded,function(input) if input~=dragInput then return end; dragInput=nil; if not didDrag then togglePanel() end end)
 conn(UIS.InputBegan,function(input,processed) if not processed and input.KeyCode==Enum.KeyCode.J then togglePanel() end end)
+
+-- =========================================================
+-- EVENTOS GLOBAIS
+-- =========================================================
 conn(Players.PlayerAdded,function() refreshTarget() end)
 conn(Players.PlayerRemoving,function(p)
  removeESP(p)
  if selected==p then selected=nil; stopFollow(); stopSpectate() end
  task.defer(refreshTarget)
 end)
+
 conn(gui.Destroying,function()
- alive=false; stopAir(); stopFollow(); stopSpectate()
+ alive=false
+ stopAir(); stopFollow(); stopSpectate(); stopAntiAfk()
  for p in pairs(espObjects) do removeESP(p) end
  if espGui then espGui:Destroy() end
  for _,c in ipairs(connections) do if c.Connected then c:Disconnect() end end
 end)
+
 showTab('Home')
-print('77 PANEL MOBILE + FREE EMOTES carregado')
+print('77 PANEL MOBILE + FREE EMOTES (CORRIGIDO) carregado')
